@@ -4,8 +4,8 @@ const mysql = require('mysql2/promise');
 const { Sequelize } = require('sequelize');
 const env = require('./env');
 
-// macOS Homebrew MySQL 9.x: TCP bağlantısında "packets out of order" hatası
-// çözüm: socketPath kullan (production'da host:port çalışır)
+// macOS Homebrew MySQL 9.x: TCP bağlantısında "packets out of order" / hang
+// çözüm: socketPath + host: null (production'da host:port çalışır)
 const poolConfig = {
   database: env.db.name,
   user: env.db.user,
@@ -26,6 +26,7 @@ if (env.db.socket) {
 const pool = mysql.createPool(poolConfig);
 
 // Sequelize — ORM (users, imports, saved_views, segments, audit_logs, api_logs)
+// host: null zorunlu — socket ile birlikte kullanılırken TCP denemesini engeller
 const sequelizeConfig = {
   dialect: 'mysql',
   logging: false,
@@ -33,6 +34,7 @@ const sequelizeConfig = {
   pool: { max: env.db.connectionLimit, min: 0, acquire: 30000, idle: 10000 },
 };
 if (env.db.socket) {
+  sequelizeConfig.host = '127.0.0.1';
   sequelizeConfig.dialectOptions = { socketPath: env.db.socket };
 } else {
   sequelizeConfig.host = env.db.host;

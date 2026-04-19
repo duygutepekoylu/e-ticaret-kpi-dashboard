@@ -3,8 +3,8 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
+// swagger: lazy load — sadece /api/v1/docs isteğinde yüklenir
+let swaggerJsdoc, swaggerUi;
 
 const env = require('./src/config/env');
 const { testConnection } = require('./src/config/database');
@@ -14,6 +14,7 @@ const { verifyToken, requireRole } = require('./src/middleware/auth');
 const { errorHandler, notFoundHandler } = require('./src/middleware/errorHandler');
 
 const app = express();
+let dbReady = false;
 
 // ----------------------------------------------------------------
 // Güvenlik + CORS + JSON
@@ -29,22 +30,29 @@ app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 
 // ----------------------------------------------------------------
-// Swagger dokümantasyonu
+// Swagger dokümantasyonu — lazy load (ilk istek gelince)
 // ----------------------------------------------------------------
-const swaggerSpec = swaggerJsdoc({
-  definition: {
-    openapi: '3.0.0',
-    info: { title: 'Sporthink KPI API', version: '1.0.0', description: 'Sporthink e-ticaret KPI Dashboard API' },
-    servers: [{ url: `http://localhost:${env.app.port}` }],
-    components: {
-      securitySchemes: {
-        bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+let swaggerSpec = null;
+app.get('/api/v1/docs/spec', (req, res) => {
+  if (!swaggerJsdoc) swaggerJsdoc = require('swagger-jsdoc');
+  if (!swaggerSpec) {
+    swaggerSpec = swaggerJsdoc({
+      definition: {
+        openapi: '3.0.0',
+        info: { title: 'Sporthink KPI API', version: '1.0.0', description: 'Sporthink e-ticaret KPI Dashboard API' },
+        servers: [{ url: `http://localhost:${env.app.port}` }],
+        components: { securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' } } },
       },
-    },
-  },
-  apis: ['./app.js', './src/routes/v1/*.js'],
+      apis: ['./app.js', './src/routes/v1/*.js'],
+    });
+  }
+  res.json(swaggerSpec);
 });
-app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/v1/docs', (req, res, next) => {
+  if (!swaggerUi) swaggerUi = require('swagger-ui-express');
+  if (!swaggerSpec && !swaggerJsdoc) return res.redirect('/api/v1/docs/spec');
+  swaggerUi.serve(req, res, next);
+});
 
 // ----------------------------------------------------------------
 // Public endpoint'ler (auth gerektirmez)
@@ -61,8 +69,12 @@ app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *         description: Sistem çalışıyor
  */
 app.get('/health', async (req, res) => {
+  if (dbReady) {
+    return res.json(success({ db: 'connected', uptime: process.uptime() }));
+  }
   try {
     await testConnection();
+    dbReady = true;
     res.json(success({ db: 'connected', uptime: process.uptime() }));
   } catch (err) {
     res.status(500).json(error('DB_ERROR', 'Veritabanı bağlantısı kurulamadı'));
@@ -127,20 +139,22 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // ----------------------------------------------------------------
-// Sunucu başlatma
+// Sunucu başlatma — önce dinle, sonra DB bağlantısını doğrula
 // ----------------------------------------------------------------
-async function start() {
-  try {
-    await testConnection();
-    console.log('✅ Veritabanı bağlantısı (mysql2 pool + Sequelize) kuruldu');
-    app.listen(env.app.port, () => {
-      console.log(`🚀 Sunucu çalışıyor: http://localhost:${env.app.port}`);
-      console.log(`📖 Swagger: http://localhost:${env.app.port}/api/v1/docs`);
-    });
-  } catch (err) {
-    console.error('❌ Sunucu başlatılamadı:', err.message);
-    process.exit(1);
-  }
+function start() {
+  app.listen(env.app.port, () => {
+    console.log(`🚀 Sunucu çalışıyor: http://localhost:${env.app.port}`);
+    console.log(`📖 Swagger: http://localhost:${env.app.port}/api/v1/docs`);
+
+    testConnection()
+      .then(() => {
+        dbReady = true;
+        console.log('✅ Veritabanı bağlantısı kuruldu (mysql2 + Sequelize)');
+      })
+      .catch((err) => {
+        console.error('⚠️  Veritabanı bağlantısı başarısız:', err.message);
+      });
+  });
 }
 
 start();

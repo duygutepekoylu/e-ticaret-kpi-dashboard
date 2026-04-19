@@ -2,9 +2,9 @@
 
 ## Güncel Durum
 
-**Aktif Faz:** Faz 2 — Backend Kurulum + Modeller
-**Genel İlerleme:** 1/14 faz tamamlandı
-**Son Güncelleme:** 2026-04-19
+**Aktif Faz:** Faz 3 — Import: Parser + Previewer + Validator
+**Genel İlerleme:** 2/14 faz tamamlandı
+**Son Güncelleme:** 2026-04-20
 
 ---
 
@@ -27,6 +27,25 @@ VARCHAR prefix uzunlukları utf8mb4 3072-byte limitine uyacak şekilde küçült
   channel_mapping=16 — hepsi beklenenle tam eşleşti ✅
 Not: ORM kararı alındı — Sequelize (CRUD: users, imports, saved_views, segments,
 audit_logs, api_logs) + Raw SQL/mysql2 (KPI, aggregation, analytics) hybrid yaklaşım.
+
+---
+
+## Faz 2 — Backend Kurulum + Modeller ✅
+Tamamlanma: 2026-04-20
+Özet: Express + JWT + middleware stack kuruldu. 4 kritik bug çözüldü: (1) Sequelize
+`host: null` macOS socket hang → `host: '127.0.0.1'` yapıldı; (2) `/health` route
+notFoundHandler'dan sonraydı → öne taşındı; (3) `dbReady` değişkeni kullanımdan
+sonra tanımlanıyordu → en üste taşındı; (4) `swagger-jsdoc` + `swagger-ui-express`
+startup'ta yüzlerce dosya okuyarak askıya alıyordu → tam lazy load yapıldı (sadece
+/api/v1/docs isteğinde yüklenir). Tüm test kriterleri geçti:
+- GET /health → `{ success: true, db: "connected" }` ✅
+- Token yok → 401 UNAUTHORIZED ✅
+- viewer token + admin endpoint → 403 FORBIDDEN ✅
+- Olmayan route → `{ success: false, error: { code: "NOT_FOUND" } }` ✅
+- 11 model dosyası oluşturuldu, DB bağlantısı + SELECT sorguları çalışıyor ✅
+Not: swagger-jsdoc lazy load nedeniyle /api/v1/docs ilk açılışta yavaş olabilir.
+routes/v1/*.js glob'u da lazy'e dahil edildi — route dosyaları eklenince otomatik
+taranacak.
 
 ---
 

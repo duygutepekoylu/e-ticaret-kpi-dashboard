@@ -44,22 +44,22 @@ Tüm tablolar oluştu + seed verileri doğru yüklendi → Faz 2'ye geç
 ## Faz 2 — Backend Kurulum + Modeller
 
 ### Yapılacaklar
-- [ ] `backend/package.json` oluştur — bağımlılıklar:
+- [x] `backend/package.json` oluştur — bağımlılıklar:
   - express, mysql2, sequelize, jsonwebtoken, bcryptjs
   - multer (dosya yükleme), csv-parse, xlsx
   - dotenv, cors, helmet, morgan
   - swagger-jsdoc, swagger-ui-express
-- [ ] `backend/.env.example` oluştur
-- [ ] `backend/src/config/database.js` — MySQL bağlantı pool
-- [ ] `backend/src/config/env.js` — ortam değişkenleri doğrulama
-- [ ] `backend/src/middleware/auth.js` — JWT verify + requireRole
-- [ ] `backend/src/middleware/requestLogger.js` — api_logs tablosuna yaz
-- [ ] `backend/src/middleware/errorHandler.js` — merkezi hata yönetimi
-- [ ] `backend/src/utils/formatters.js` — `{ success, data, meta }` response
-- [ ] `backend/src/utils/auditLogger.js` — audit_logs tablosuna yaz
-- [ ] `backend/src/utils/dbHelpers.js` — pagination, date format yardımcıları
-- [ ] `backend/app.js` — Express setup, middleware kayıtları, route bağlantıları
-- [ ] Model dosyaları (her biri CRUD + özel sorgular):
+- [x] `backend/.env.example` oluştur
+- [x] `backend/src/config/database.js` — MySQL bağlantı pool
+- [x] `backend/src/config/env.js` — ortam değişkenleri doğrulama
+- [x] `backend/src/middleware/auth.js` — JWT verify + requireRole
+- [x] `backend/src/middleware/requestLogger.js` — api_logs tablosuna yaz
+- [x] `backend/src/middleware/errorHandler.js` — merkezi hata yönetimi
+- [x] `backend/src/utils/formatters.js` — `{ success, data, meta }` response
+- [x] `backend/src/utils/auditLogger.js` — audit_logs tablosuna yaz
+- [x] `backend/src/utils/dbHelpers.js` — pagination, date format yardımcıları
+- [x] `backend/app.js` — Express setup, middleware kayıtları, route bağlantıları
+- [x] Model dosyaları (her biri CRUD + özel sorgular):
   - `models/order.js`
   - `models/orderItem.js`
   - `models/customer.js`
@@ -73,13 +73,13 @@ Tüm tablolar oluştu + seed verileri doğru yüklendi → Faz 2'ye geç
   - `models/user.js`
 
 ### Test Kriterleri
-- [ ] `npm start` → sunucu ayağa kalkmalı, hata yok
-- [ ] DB bağlantısı: `GET /health` → `{ success: true, db: "connected" }`
-- [ ] JWT test: geçersiz token ile istek → 401 dönmeli
-- [ ] Role test: viewer token ile admin endpoint → 403 dönmeli
-- [ ] Her model için unit test: en az 1 SELECT sorgusu çalışmalı
-- [ ] Error handler: olmayan route → `{ success: false, error: { code, message } }`
-- [ ] Request logger: istek sonrası api_logs tablosunda kayıt var mı
+- [x] `npm start` → sunucu ayağa kalkmalı, hata yok
+- [x] DB bağlantısı: `GET /health` → `{ success: true, db: "connected" }`
+- [x] JWT test: geçersiz token ile istek → 401 dönmeli
+- [x] Role test: viewer token ile admin endpoint → 403 dönmeli
+- [x] Her model için unit test: en az 1 SELECT sorgusu çalışmalı
+- [x] Error handler: olmayan route → `{ success: false, error: { code, message } }`
+- [x] Request logger: istek sonrası api_logs tablosunda kayıt var mı
 
 ### Geçiş Onayı
 Sunucu çalışıyor + DB bağlantısı OK + JWT çalışıyor + tüm modeller sorgu döndürüyor → Faz 3'e geç
