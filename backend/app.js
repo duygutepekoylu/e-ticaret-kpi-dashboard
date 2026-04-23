@@ -82,6 +82,11 @@ app.get('/health', async (req, res) => {
 });
 
 // ----------------------------------------------------------------
+// Public route'lar — auth gerektirmez (verifyToken'dan önce mount)
+// ----------------------------------------------------------------
+app.use('/api/v1/auth', require('./src/routes/v1/auth'));
+
+// ----------------------------------------------------------------
 // Protected endpoint'ler — tüm /api/v1/* JWT gerektirir
 // ----------------------------------------------------------------
 app.use('/api/v1', verifyToken);
@@ -125,12 +130,18 @@ app.get('/api/v1/admin-test', requireRole('admin'), (req, res) => {
 });
 
 // ----------------------------------------------------------------
-// Route'lar — ilerleyen fazlarda eklenecek
+// Protected Route'lar
 // ----------------------------------------------------------------
-// app.use('/api/v1/auth',      require('./src/routes/v1/auth'));
-// app.use('/api/v1/imports',   require('./src/routes/v1/imports'));
-// app.use('/api/v1/kpi',       require('./src/routes/v1/kpi'));
-// app.use('/api/v1/dashboard', require('./src/routes/v1/dashboard'));
+app.use('/api/v1/imports',   require('./src/routes/v1/imports'));
+app.use('/api/v1/mappings',  require('./src/routes/v1/mappings'));
+app.use('/api/v1/kpi',       require('./src/routes/v1/kpi'));
+app.use('/api/v1/dashboard', require('./src/routes/v1/dashboard'));
+app.use('/api/v1/filters',   require('./src/routes/v1/filters'));
+app.use('/api/v1/views',     require('./src/routes/v1/views'));
+app.use('/api/v1/segments',  require('./src/routes/v1/segments'));
+app.use('/api/v1/export',    require('./src/routes/v1/export'));
+app.use('/api/v1/logs',      require('./src/routes/v1/logs'));
+app.use('/api/v1/normalize', require('./src/routes/v1/normalize'));
 
 // ----------------------------------------------------------------
 // 404 ve hata yönetimi — en sonda

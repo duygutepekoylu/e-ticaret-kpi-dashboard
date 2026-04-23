@@ -89,7 +89,7 @@ Sunucu çalışıyor + DB bağlantısı OK + JWT çalışıyor + tüm modeller s
 ## Faz 3 — Import: Parser + Previewer + Validator
 
 ### Yapılacaklar
-- [ ] `importer/config/` — 11 kaynak için mapping dosyaları:
+- [x] `importer/config/` — 11 kaynak için mapping dosyaları:
   - ga4TrafficMapping.js
   - ga4ItemsMapping.js
   - metaAdsMapping.js
@@ -101,21 +101,21 @@ Sunucu çalışıyor + DB bağlantısı OK + JWT çalışıyor + tüm modeller s
   - customersMapping.js
   - campaignsMapping.js
   - channelMappingMapping.js
-- [ ] `importer/parsers/csvParser.js` — csv-parse ile satır satır oku
-- [ ] `importer/parsers/xlsxParser.js` — xlsx ile sheet oku
-- [ ] `importer/parsers/jsonParser.js` — JSON.parse + array doğrulama
-- [ ] `importer/previewer.js` — ilk 10 satırı oku, DB'ye yazma
-- [ ] `importer/validator.js` — tip kontrolü + zorunlu alan kontrolü
+- [x] `importer/parsers/csvParser.js` — csv-parse ile satır satır oku
+- [x] `importer/parsers/xlsxParser.js` — xlsx ile sheet oku
+- [x] `importer/parsers/jsonParser.js` — JSON.parse + array doğrulama
+- [x] `importer/previewer.js` — ilk 10 satırı oku, DB'ye yazma
+- [x] `importer/validator.js` — tip kontrolü + zorunlu alan kontrolü
 
 ### Test Kriterleri
-- [ ] CSV parser: ga4_traffic.csv → 46.317 satır parse edilmeli
-- [ ] XLSX parser: products.xlsx oluştur → doğru satır sayısı
-- [ ] JSON parser: orders.json oluştur → doğru parse
-- [ ] Parser hata: bozuk CSV → anlamlı hata mesajı
-- [ ] Previewer: ga4_traffic.csv → ilk 10 satır, DB'de yeni kayıt YOK
-- [ ] Validator zorunlu alan: date eksik GA4 satırı → hata raporu
-- [ ] Validator tip: impressions alanına "abc" → hata raporu
-- [ ] Validator geçerli: doğru veri → hata yok
+- [x] CSV parser: ga4_traffic.csv → 46.317 satır parse edilmeli
+- [x] XLSX parser: products.xlsx oluştur → doğru satır sayısı
+- [x] JSON parser: orders.json oluştur → doğru parse
+- [x] Parser hata: bozuk CSV → anlamlı hata mesajı
+- [x] Previewer: ga4_traffic.csv → ilk 10 satır, DB'de yeni kayıt YOK
+- [x] Validator zorunlu alan: date eksik GA4 satırı → hata raporu
+- [x] Validator tip: impressions alanına "abc" → hata raporu
+- [x] Validator geçerli: doğru veri → hata yok
 
 ### Geçiş Onayı
 3 format parse ediliyor + previewer DB'ye yazmıyor + validator hataları doğru yakalıyor → Faz 4'e geç
@@ -125,7 +125,7 @@ Sunucu çalışıyor + DB bağlantısı OK + JWT çalışıyor + tüm modeller s
 ## Faz 4 — Import: Transformer + Mapper + Importer
 
 ### Yapılacaklar
-- [ ] `importer/transformer.js` — dönüşüm kuralları:
+- [x] `importer/transformer.js` — dönüşüm kuralları:
   - GA4 date: `20241001` (int) → `2024-10-01` (DATE)
   - Meta CTR: `2.25` → `0.0225` (÷100)
   - Google cost_micros: `2800000000` → `2800.00` (÷1.000.000)
@@ -133,9 +133,9 @@ Sunucu çalışıyor + DB bağlantısı OK + JWT çalışıyor + tüm modeller s
   - camelCase → snake_case (GA4)
   - Noktalı sütun adları → snake_case (Google Ads)
   - Meta action: prefix temizleme
-- [ ] `importer/mapper.js` — config'den oku, sütun adı eşle
-- [ ] `importer/duplicateChecker.js` — bu tarih aralığı daha önce yüklendi mi
-- [ ] `importer/importer.js`:
+- [x] `importer/mapper.js` — config'den oku, sütun adı eşle
+- [x] `importer/duplicateChecker.js` — bu tarih aralığı daha önce yüklendi mi
+- [x] `importer/importer.js`:
   - Raw tabloya yaz
   - Transformer çalıştır
   - Clean tabloya yaz
@@ -144,16 +144,16 @@ Sunucu çalışıyor + DB bağlantısı OK + JWT çalışıyor + tüm modeller s
   - KPI hesaplamayı tetikle
 
 ### Test Kriterleri
-- [ ] Transformer GA4: `20241001` → `2024-10-01` doğrulama
-- [ ] Transformer Meta CTR: `2.25` → `0.0225` doğrulama
-- [ ] Transformer Google: `2800000000` → `2800.00` doğrulama
-- [ ] Mapper GA4: `sessionSource` → `session_source` doğrulama
-- [ ] Mapper Google: `segments.date` → `date` doğrulama
-- [ ] Duplicate checker: aynı dosyayı iki kez yükle → uyarı ver
-- [ ] Importer: ga4_traffic.csv yükle → raw_ga4_traffic satır sayısı = ga4_traffic satır sayısı
-- [ ] Importer: bozuk satır → import_errors'a yazıldı mı
-- [ ] Importer rollback: DB yazma sırasında hata → hiçbir şey yazılmamış olmalı
-- [ ] imports tablosu: status, total_rows, error_rows doğru güncellendi mi
+- [x] Transformer GA4: `20241001` → `2024-10-01` doğrulama
+- [x] Transformer Meta CTR: `2.25` → `0.0225` doğrulama
+- [x] Transformer Google: `2800000000` → `2800.00` doğrulama
+- [x] Mapper GA4: `sessionSource` → `session_source` doğrulama
+- [x] Mapper Google: `segments.date` → `date` doğrulama
+- [x] Duplicate checker: aynı dosyayı iki kez yükle → uyarı ver
+- [x] Importer: ga4_traffic.csv yükle → raw_ga4_traffic satır sayısı = ga4_traffic satır sayısı
+- [x] Importer: bozuk satır → import_errors'a yazıldı mı
+- [x] Importer rollback: DB yazma sırasında hata → hiçbir şey yazılmamış olmalı
+- [x] imports tablosu: status, total_rows, error_rows doğru güncellendi mi
 
 ### Geçiş Onayı
 Tüm dönüşümler doğrulandı + raw ve clean tablolar eşleşiyor + rollback çalışıyor → Faz 5'e geç
@@ -163,36 +163,36 @@ Tüm dönüşümler doğrulandı + raw ve clean tablolar eşleşiyor + rollback 
 ## Faz 5 — KPI Motoru: Traffic + Ads + Sales
 
 ### Yapılacaklar
-- [ ] `kpi/formulas.js` — tüm kritik formüller:
+- [x] `kpi/formulas.js` — tüm kritik formüller:
   - `weightedAvg(rows, valueField, weightField)` — bounce_rate, pages_per_session, avg_session_duration
   - `roas(revenue, spend)` — spend=0 ise null döner
   - `growthRate(current, previous)` — previous=0 ise null
   - `conversionRate(orders, sessions)`
   - `cohortRetentionRate(active, total)`
-- [ ] `kpi/traffic.js` — kpi_daily_traffic hesaplama:
+- [x] `kpi/traffic.js` — kpi_daily_traffic hesaplama:
   - SUM sessions, users, new_users, conversions
   - weighted avg bounce_rate, pages_per_session, avg_session_duration
   - revenue_per_user = purchase_revenue / total_users
   - traffic_growth_rate önceki günle karşılaştırma
-- [ ] `kpi/ads.js` — kpi_daily_ads hesaplama:
+- [x] `kpi/ads.js` — kpi_daily_ads hesaplama:
   - Meta + Google birleştir (UNION ALL)
   - ROAS: gelir orders tablosundan (campaign_name join)
   - spend_growth_rate, roas_growth_rate
   - frequency: sadece Meta (Google NULL)
-- [ ] `kpi/sales.js` — kpi_daily_sales hesaplama:
+- [x] `kpi/sales.js` — kpi_daily_sales hesaplama:
   - orders + order_items join
   - new_customer_revenue vs returning_customer_revenue
   - repeat_purchase_rate, refund_rate, revenue_growth_rate
 
 ### Test Kriterleri
-- [ ] formulas.js: weightedAvg testi — 1000 session %30 + 10 session %90 → ~%30.6
-- [ ] formulas.js: roas(0 spend) → null, roas(1000, 100) → 10.0
-- [ ] formulas.js: growthRate(120, 100) → 0.2
-- [ ] traffic.js: bounce_rate weighted avg mı basit avg mı? → weighted olmalı
-- [ ] ads.js: ROAS hesabında pixel_purchase_value kullanılmıyor mu → orders tablosundan geliyor
-- [ ] ads.js: Google frequency → NULL
-- [ ] sales.js: new + returning revenue toplamı = net_revenue mi
-- [ ] Tüm KPI tablolarına veri yazıldı mı (kpi_daily_* SELECT)
+- [x] formulas.js: weightedAvg testi — 1000 session %30 + 10 session %90 → ~%30.6
+- [x] formulas.js: roas(0 spend) → null, roas(1000, 100) → 10.0
+- [x] formulas.js: growthRate(120, 100) → 0.2
+- [x] traffic.js: bounce_rate weighted avg mı basit avg mı? → weighted olmalı
+- [x] ads.js: ROAS hesabında pixel_purchase_value kullanılmıyor mu → orders tablosundan geliyor
+- [x] ads.js: Google frequency → NULL
+- [x] sales.js: new + returning revenue toplamı = net_revenue mi
+- [x] Tüm KPI tablolarına veri yazıldı mı (kpi_daily_* SELECT)
 
 ### Geçiş Onayı
 Tüm formüller test edildi + ROAS kuralı doğrulandı + KPI tablolarında veri var → Faz 6'ya geç
@@ -202,32 +202,32 @@ Tüm formüller test edildi + ROAS kuralı doğrulandı + KPI tablolarında veri
 ## Faz 6 — KPI Motoru: Channel + Campaign + Product + Cohort
 
 ### Yapılacaklar
-- [ ] `kpi/channel.js` — agg_channel_performance:
+- [x] `kpi/channel.js` — agg_channel_performance:
   - GA4 attribution: orders.channel = ga4_traffic.session_default_channel_group
   - revenue, sessions, orders, spend, roas, conversion_rate, revenue_per_user
-- [ ] `kpi/campaign.js` — agg_campaign_performance:
+- [x] `kpi/campaign.js` — agg_campaign_performance:
   - campaign_name join: orders + meta_ads + google_ads
   - spend Meta + Google toplamı
   - revenue orders tablosundan
-- [ ] `kpi/product.js` — agg_product_performance:
+- [x] `kpi/product.js` — agg_product_performance:
   - ga4_item_interactions + order_items JOIN item_id üzerinden
   - UYARI: ga4_item_interactions ve ga4_traffic AYNI SORGUDA birleştirilemez
   - purchase_rate = items_purchased / items_viewed
-- [ ] `kpi/cohort.js` — agg_cohort_retention:
+- [x] `kpi/cohort.js` — agg_cohort_retention:
   - customers.first_order_date → cohort_month belirleme
   - Her offset_month için active_customers ve retention_rate
   - AY BAZLI çalışır, gün bazlı değil
 
 ### Test Kriterleri
-- [ ] channel.js: Paid Social kanalının geliri orders tablosundan mı geliyor
-- [ ] channel.js: organic kanalda ROAS → NULL (spend=0)
-- [ ] campaign.js: bir kampanyanın spend'i meta + google toplamı mı
-- [ ] campaign.js: ROAS = orders.net_revenue / (meta+google spend)
-- [ ] product.js: ga4_traffic ile JOIN yapılmıyor mu — kontrol et
-- [ ] product.js: purchase_rate = items_purchased / items_viewed
-- [ ] cohort.js: offset=0'da retention_rate = 1.0 (tüm müşteriler aktif)
-- [ ] cohort.js: ay bazlı gruplama doğru mu (YYYY-MM formatı)
-- [ ] Tüm agg tablolarında veri var mı
+- [x] channel.js: Paid Social kanalının geliri orders tablosundan mı geliyor
+- [x] channel.js: organic kanalda ROAS → NULL (spend=0)
+- [x] campaign.js: bir kampanyanın spend'i meta + google toplamı mı
+- [x] campaign.js: ROAS = orders.net_revenue / (meta+google spend)
+- [x] product.js: ga4_traffic ile JOIN yapılmıyor mu — kontrol et
+- [x] product.js: purchase_rate = items_purchased / items_viewed
+- [x] cohort.js: offset=0'da retention_rate = 1.0 (tüm müşteriler aktif)
+- [x] cohort.js: ay bazlı gruplama doğru mu (YYYY-MM formatı)
+- [x] Tüm agg tablolarında veri var mı
 
 ### Geçiş Onayı
 4 aggregation tablosu doğru veriyle dolu + GA4 kısıtı ihlal edilmemiş + cohort ay bazlı → Faz 7'ye geç
@@ -237,11 +237,11 @@ Tüm formüller test edildi + ROAS kuralı doğrulandı + KPI tablolarında veri
 ## Faz 7 — REST API: Auth + Import Endpoint'leri
 
 ### Yapılacaklar
-- [ ] `routes/v1/auth.js` + `controllers/authController.js`:
+- [x] `routes/v1/auth.js` + `controllers/authController.js`:
   - POST /api/v1/auth/login → JWT üret
   - POST /api/v1/auth/logout
   - GET  /api/v1/auth/me
-- [ ] `routes/v1/imports.js` + `controllers/importController.js`:
+- [x] `routes/v1/imports.js` + `controllers/importController.js`:
   - POST   /api/v1/imports → dosya yükle (multer)
   - GET    /api/v1/imports → import geçmişi
   - GET    /api/v1/imports/:id → detay
@@ -251,24 +251,24 @@ Tüm formüller test edildi + ROAS kuralı doğrulandı + KPI tablolarında veri
   - POST   /api/v1/imports/:id/commit → DB'ye yaz + KPI tetikle
   - GET    /api/v1/imports/:id/errors → hatalı satırlar
   - DELETE /api/v1/imports/:id → rollback
-- [ ] `routes/v1/mappings.js` + `controllers/mappingController.js`:
+- [x] `routes/v1/mappings.js` + `controllers/mappingController.js`:
   - GET    /api/v1/mappings/channels
   - POST   /api/v1/mappings/channels
-  - PUT    /api/v1/mappings/channels/:id
-  - DELETE /api/v1/mappings/channels/:id
-- [ ] Tüm endpoint'lere swagger-jsdoc yorumları ekle
+  - PUT    /api/v1/mappings/channels/:source/:medium
+  - DELETE /api/v1/mappings/channels/:source/:medium
+- [x] Tüm endpoint'lere swagger-jsdoc yorumları ekle
 
 ### Test Kriterleri
-- [ ] Auth: geçerli login → JWT token dönüyor
-- [ ] Auth: yanlış şifre → 401
-- [ ] Auth: token olmadan import endpoint → 401
-- [ ] Auth: viewer token ile commit → 403
-- [ ] Import upload: ga4_traffic.csv yükle → import kaydı oluştu
-- [ ] Import preview: ilk 10 satır dönüyor, DB'de yeni kayıt YOK
-- [ ] Import commit: tüm akış çalışıyor → status: committed
-- [ ] Import rollback: commit sonrası delete → veri silindi
-- [ ] Import errors: hatalı satır varsa listesi dönüyor
-- [ ] Swagger: /api/v1/docs → UI açılıyor, tüm endpoint'ler görünüyor
+- [x] Auth: geçerli login → JWT token dönüyor
+- [x] Auth: yanlış şifre → 401
+- [x] Auth: token olmadan import endpoint → 401
+- [x] Auth: viewer token ile commit → 403
+- [x] Import upload: campaigns.csv yükle → import kaydı oluştu
+- [x] Import preview: ilk 10 satır dönüyor, DB'de yeni kayıt YOK
+- [x] Import commit: tüm akış çalışıyor → status: committed
+- [x] Import rollback: commit sonrası delete → veri silindi
+- [x] Import errors: hatalı satır varsa listesi dönüyor
+- [x] Swagger: /api/v1/docs → UI açılıyor, tüm endpoint'ler görünüyor
 
 ### Geçiş Onayı
 Auth çalışıyor + import akışı uçtan uca test edildi + Swagger dokümante edildi → Faz 8'e geç
@@ -278,38 +278,38 @@ Auth çalışıyor + import akışı uçtan uca test edildi + Swagger dokümante
 ## Faz 8 — REST API: KPI + Dashboard + Diğer Endpoint'ler
 
 ### Yapılacaklar
-- [ ] `routes/v1/kpi.js` + `controllers/kpiController.js`:
+- [x] `routes/v1/kpi.js` + `controllers/kpiController.js`:
   - POST /api/v1/kpi/run → KPI yeniden hesapla
   - GET  /api/v1/kpi/summary → özet metrikler
-- [ ] `routes/v1/dashboard.js` + `controllers/dashboardController.js`:
+- [x] `routes/v1/dashboard.js` + `controllers/dashboardController.js`:
   - GET /api/v1/dashboard/trend → zaman serisi
   - GET /api/v1/dashboard/channel-performance
   - GET /api/v1/dashboard/platform-performance
   - GET /api/v1/dashboard/campaign-performance
   - GET /api/v1/dashboard/funnel
-- [ ] `routes/v1/filters.js` → filtre seçenekleri
-- [ ] `routes/v1/views.js` → saved_views CRUD
-- [ ] `routes/v1/segments.js` → segments CRUD
-- [ ] `routes/v1/export.js` → JSON export
-- [ ] `routes/v1/logs.js` → audit_logs + api_logs listeleme
-- [ ] `routes/v1/normalize.js` → POST /api/v1/normalize/run
-- [ ] Tüm endpoint'lere Swagger yorumları
-- [ ] Tarih aralığı, kanal, kampanya filtrelerini tüm endpoint'lere ekle
+- [x] `routes/v1/filters.js` → filtre seçenekleri
+- [x] `routes/v1/views.js` → saved_views CRUD
+- [x] `routes/v1/segments.js` → segments CRUD
+- [x] `routes/v1/export.js` → JSON export
+- [x] `routes/v1/logs.js` → audit_logs + api_logs listeleme
+- [x] `routes/v1/normalize.js` → POST /api/v1/normalize/run
+- [x] Tüm endpoint'lere Swagger yorumları
+- [x] Tarih aralığı, kanal, kampanya filtrelerini tüm endpoint'lere ekle
 
 ### Test Kriterleri
-- [ ] KPI run: tetikleme sonrası kpi_daily_* tablolarında yeni veri var mı
-- [ ] Dashboard trend: tarih aralığı filtresi çalışıyor mu
-- [ ] Dashboard channel: kanal filtresiyle doğru veri dönüyor mu
-- [ ] Dashboard funnel: 6 adım sıralı dönüyor mu
-- [ ] Filters: kanal listesi orders tablosundan geliyor mu
-- [ ] Views: oluştur → kaydet → getir → sil döngüsü
-- [ ] Segments: rules JSON doğru kaydediliyor mu
-- [ ] Export: JSON formatında doğru veri
-- [ ] Logs: audit_logs'ta son işlemler görünüyor
-- [ ] Swagger: tüm endpoint'ler dokümante edildi mi
+- [x] KPI run: tetikleme sonrası kpi_daily_* tablolarında yeni veri var mı
+- [x] Dashboard trend: tarih aralığı filtresi çalışıyor mu
+- [x] Dashboard channel: kanal filtresiyle doğru veri dönüyor mu
+- [x] Dashboard funnel: 6 adım sıralı dönüyor mu
+- [x] Filters: kanal listesi orders tablosundan geliyor mu
+- [x] Views: oluştur → kaydet → getir → sil döngüsü
+- [x] Segments: rules JSON doğru kaydediliyor mu
+- [x] Export: JSON formatında doğru veri
+- [x] Logs: audit_logs'ta son işlemler görünüyor
+- [x] Swagger: tüm endpoint'ler dokümante edildi mi
 
 ### Geçiş Onayı
-Tüm endpoint'ler çalışıyor + filtreler doğru + Swagger tam → Faz 9'a geç
+Tüm endpoint'ler çalışıyor + filtreler doğru + Swagger tam → Faz 9'a geç ✅
 
 ---
 

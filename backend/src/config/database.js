@@ -1,11 +1,9 @@
 'use strict';
 
 const mysql = require('mysql2/promise');
-const { Sequelize } = require('sequelize');
 const env = require('./env');
 
-// macOS Homebrew MySQL 9.x: TCP bağlantısında "packets out of order" / hang
-// çözüm: socketPath + host: null (production'da host:port çalışır)
+// MySQL 9.x + mysql2: TCP bağlantısında ssl:false gerekli (packets out of order hatası).
 const poolConfig = {
   database: env.db.name,
   user: env.db.user,
@@ -21,33 +19,15 @@ if (env.db.socket) {
 } else {
   poolConfig.host = env.db.host;
   poolConfig.port = env.db.port;
+  poolConfig.ssl = false;
 }
 
 const pool = mysql.createPool(poolConfig);
-
-// Sequelize — ORM (users, imports, saved_views, segments, audit_logs, api_logs)
-// host: null zorunlu — socket ile birlikte kullanılırken TCP denemesini engeller
-const sequelizeConfig = {
-  dialect: 'mysql',
-  logging: false,
-  timezone: '+00:00',
-  pool: { max: env.db.connectionLimit, min: 0, acquire: 30000, idle: 10000 },
-};
-if (env.db.socket) {
-  sequelizeConfig.host = '127.0.0.1';
-  sequelizeConfig.dialectOptions = { socketPath: env.db.socket };
-} else {
-  sequelizeConfig.host = env.db.host;
-  sequelizeConfig.port = env.db.port;
-}
-
-const sequelize = new Sequelize(env.db.name, env.db.user, env.db.password, sequelizeConfig);
 
 async function testConnection() {
   const conn = await pool.getConnection();
   await conn.ping();
   conn.release();
-  await sequelize.authenticate();
 }
 
-module.exports = { pool, sequelize, testConnection };
+module.exports = { pool, testConnection };

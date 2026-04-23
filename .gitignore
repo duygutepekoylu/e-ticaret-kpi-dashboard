@@ -1,4 +1,31 @@
+# Bağımlılıklar
 node_modules/
+backend/node_modules/
+frontend/node_modules/
+database/scripts/node_modules/
+
+# Ortam değişkenleri
 .env
-*.log
+backend/.env
+
+# Test ve geçici dosyalar
+backend/test_*.js
+backend/import_all.js
+
+# Build çıktıları
+frontend/dist/
+
+# macOS
 .DS_Store
+**/.DS_Store
+
+# Loglar
+*.log
+npm-debug.log*
+
+# Yüklenen dosyalar (büyük binary'ler)
+uploads/
+database/fixtures/raw/*.csv
+
+# Claude sistem dosyaları
+.claude/scheduled_tasks.lock

@@ -1,58 +1,54 @@
 'use strict';
 
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
-
-const User = sequelize.define('User', {
-  id:             { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  email:          { type: DataTypes.STRING(255), allowNull: false, unique: true },
-  password_hash:  { type: DataTypes.STRING(255), allowNull: false },
-  full_name:      { type: DataTypes.STRING(255), allowNull: false },
-  role:           { type: DataTypes.ENUM('admin', 'marketing', 'viewer'), allowNull: false, defaultValue: 'viewer' },
-  is_active:      { type: DataTypes.TINYINT, allowNull: false, defaultValue: 1 },
-  last_login_at:  { type: DataTypes.DATE, allowNull: true },
-}, {
-  tableName: 'users',
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
-});
+const { pool } = require('../config/database');
 
 async function findAll({ page = 1, limit = 20 } = {}) {
   const offset = (page - 1) * limit;
-  const { rows, count } = await User.findAndCountAll({
-    attributes: { exclude: ['password_hash'] },
-    limit,
-    offset,
-    order: [['created_at', 'DESC']],
-  });
-  return { rows, total: count };
+  const [[{ total }]] = await pool.query('SELECT COUNT(*) AS total FROM users');
+  const [rows] = await pool.query(
+    'SELECT id, email, full_name, role, is_active, last_login_at, created_at, updated_at FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?',
+    [limit, offset]
+  );
+  return { rows, total };
 }
 
 async function findById(id) {
-  return User.findByPk(id, { attributes: { exclude: ['password_hash'] } });
+  const [[row]] = await pool.query(
+    'SELECT id, email, full_name, role, is_active, last_login_at, created_at, updated_at FROM users WHERE id = ?',
+    [id]
+  );
+  return row || null;
 }
 
 async function findByEmail(email) {
-  return User.findOne({ where: { email } });
+  const [[row]] = await pool.query(
+    'SELECT id, email, password_hash, full_name, role, is_active, last_login_at FROM users WHERE email = ?',
+    [email]
+  );
+  return row || null;
 }
 
 async function create({ email, passwordHash, fullName, role = 'viewer' }) {
-  const user = await User.create({ email, password_hash: passwordHash, full_name: fullName, role });
-  return user.id;
+  const [result] = await pool.execute(
+    'INSERT INTO users (email, password_hash, full_name, role) VALUES (?, ?, ?, ?)',
+    [email, passwordHash, fullName, role]
+  );
+  return result.insertId;
 }
 
 async function updateLastLogin(id) {
-  await User.update({ last_login_at: new Date() }, { where: { id } });
+  await pool.execute('UPDATE users SET last_login_at = NOW() WHERE id = ?', [id]);
 }
 
 async function update(id, data) {
-  const allowed = {};
-  if (data.fullName  !== undefined) allowed.full_name = data.fullName;
-  if (data.role      !== undefined) allowed.role = data.role;
-  if (data.isActive  !== undefined) allowed.is_active = data.isActive ? 1 : 0;
-  if (!Object.keys(allowed).length) return;
-  await User.update(allowed, { where: { id } });
+  const fields = [];
+  const values = [];
+  if (data.fullName  !== undefined) { fields.push('full_name = ?');  values.push(data.fullName); }
+  if (data.role      !== undefined) { fields.push('role = ?');       values.push(data.role); }
+  if (data.isActive  !== undefined) { fields.push('is_active = ?');  values.push(data.isActive ? 1 : 0); }
+  if (!fields.length) return;
+  values.push(id);
+  await pool.execute(`UPDATE users SET ${fields.join(', ')} WHERE id = ?`, values);
 }
 
-module.exports = { User, findAll, findById, findByEmail, create, updateLastLogin, update };
+module.exports = { findAll, findById, findByEmail, create, updateLastLogin, update };

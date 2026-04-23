@@ -1,63 +1,53 @@
 'use strict';
 
-const { DataTypes, Op } = require('sequelize');
-const { sequelize } = require('../config/database');
-
-const Import = sequelize.define('Import', {
-  id:           { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  user_id:      { type: DataTypes.INTEGER, allowNull: false },
-  source_table: { type: DataTypes.STRING(100), allowNull: false },
-  filename:     { type: DataTypes.STRING(500), allowNull: false },
-  file_type:    { type: DataTypes.STRING(10), allowNull: false },
-  status:       { type: DataTypes.STRING(20), allowNull: false, defaultValue: 'pending' },
-  total_rows:   { type: DataTypes.INTEGER, allowNull: true },
-  success_rows: { type: DataTypes.INTEGER, allowNull: true },
-  error_rows:   { type: DataTypes.INTEGER, allowNull: true },
-  error_message:{ type: DataTypes.TEXT, allowNull: true },
-  started_at:   { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
-  completed_at: { type: DataTypes.DATE, allowNull: true },
-}, {
-  tableName: 'imports',
-  timestamps: false,
-});
+const { pool } = require('../config/database');
 
 async function findAll({ sourceTable, status, page = 1, limit = 20 } = {}) {
-  const where = {};
-  if (sourceTable) where.source_table = sourceTable;
-  if (status) where.status = status;
-  const offset = (page - 1) * limit;
-  const { rows, count } = await Import.findAndCountAll({ where, limit, offset, order: [['started_at', 'DESC']] });
-  return { rows, total: count };
+  const where = [];
+  const values = [];
+  if (sourceTable) { where.push('source_table = ?'); values.push(sourceTable); }
+  if (status)      { where.push('status = ?');       values.push(status); }
+
+  const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : '';
+  const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM imports ${whereClause}`, values);
+  const [rows] = await pool.query(
+    `SELECT * FROM imports ${whereClause} ORDER BY started_at DESC LIMIT ? OFFSET ?`,
+    [...values, limit, (page - 1) * limit]
+  );
+  return { rows, total };
 }
 
 async function findById(id) {
-  return Import.findByPk(id);
+  const [[row]] = await pool.query('SELECT * FROM imports WHERE id = ?', [id]);
+  return row || null;
 }
 
 async function create({ userId, sourceTable, filename, fileType }) {
-  const imp = await Import.create({
-    user_id: userId,
-    source_table: sourceTable,
-    filename,
-    file_type: fileType,
-    status: 'pending',
-  });
-  return imp.id;
+  const [result] = await pool.execute(
+    'INSERT INTO imports (user_id, source_table, filename, file_type, status) VALUES (?, ?, ?, ?, ?)',
+    [userId, sourceTable, filename, fileType, 'pending']
+  );
+  return result.insertId;
 }
 
 async function updateStatus(id, { status, totalRows, successRows, errorRows, errorMessage } = {}) {
-  const updates = {};
-  if (status      !== undefined) updates.status = status;
-  if (totalRows   !== undefined) updates.total_rows = totalRows;
-  if (successRows !== undefined) updates.success_rows = successRows;
-  if (errorRows   !== undefined) updates.error_rows = errorRows;
-  if (errorMessage!== undefined) updates.error_message = errorMessage;
-  if (status === 'committed' || status === 'failed') updates.completed_at = new Date();
-  await Import.update(updates, { where: { id } });
+  const fields = ['status = ?'];
+  const values = [status];
+  if (totalRows    !== undefined) { fields.push('total_rows = ?');    values.push(totalRows); }
+  if (successRows  !== undefined) { fields.push('success_rows = ?');  values.push(successRows); }
+  if (errorRows    !== undefined) { fields.push('error_rows = ?');    values.push(errorRows); }
+  if (errorMessage !== undefined) { fields.push('error_message = ?'); values.push(String(errorMessage).slice(0, 1000)); }
+  if (status === 'committed' || status === 'failed') fields.push('completed_at = NOW()');
+  values.push(id);
+  await pool.execute(`UPDATE imports SET ${fields.join(', ')} WHERE id = ?`, values);
+}
+
+async function updateSourceTable(id, sourceTable) {
+  await pool.execute('UPDATE imports SET source_table = ?, status = ? WHERE id = ?', [sourceTable, 'pending', id]);
 }
 
 async function deleteById(id) {
-  return Import.destroy({ where: { id } });
+  await pool.execute('DELETE FROM imports WHERE id = ?', [id]);
 }
 
-module.exports = { Import, findAll, findById, create, updateStatus, deleteById };
+module.exports = { findAll, findById, create, updateStatus, updateSourceTable, deleteById };
