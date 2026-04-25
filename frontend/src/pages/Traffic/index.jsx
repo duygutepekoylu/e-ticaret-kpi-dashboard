@@ -61,7 +61,7 @@ export default function Traffic() {
           title="Oturum & Kullanıcı Trendi"
           labels={trendAgg.map(r => formatDate(r.date))}
           datasets={[
-            { label: 'Oturum', data: trendAgg.map(r => r.sessions), color: '#EE3423' },
+            { label: 'Oturum', data: trendAgg.map(r => r.sessions), color: '#2E90FA' },
             { label: 'Kullanıcı', data: trendAgg.map(r => r.users), color: '#2E90FA' },
           ]}
           height={280}
@@ -72,7 +72,7 @@ export default function Traffic() {
       <BarChart
         title="Kanal Bazlı Oturum Dağılımı"
         labels={channels.map(r => r.channel_group)}
-        datasets={[{ label: 'Oturum', data: channels.map(r => Number(r.sessions) || 0), color: '#EE3423' }]}
+        datasets={[{ label: 'Oturum', data: channels.map(r => Number(r.sessions) || 0), color: '#2E90FA' }]}
         height={260}
         horizontal
         loading={loadingChannel}

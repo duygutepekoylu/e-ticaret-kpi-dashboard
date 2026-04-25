@@ -55,7 +55,7 @@ export default function Channels() {
           datasets={[{
             label: 'ROAS',
             data: channels.map(r => r.roas != null ? Number(r.roas) : 0),
-            color: '#EE3423',
+            color: '#2E90FA',
           }]}
           height={260}
           horizontal
@@ -67,8 +67,8 @@ export default function Channels() {
         title="Kanal Bazlı Ciro vs Harcama"
         labels={channels.map(r => r.channel_group)}
         datasets={[
-          { label: 'Ciro (₺)',    data: channels.map(r => Number(r.revenue) || 0), color: '#EE3423' },
-          { label: 'Harcama (₺)', data: channels.map(r => Number(r.spend) || 0),   color: '#2E90FA' },
+          { label: 'Ciro (₺)',    data: channels.map(r => Number(r.revenue) || 0), color: '#12B76A' },
+          { label: 'Harcama (₺)', data: channels.map(r => Number(r.spend) || 0),   color: '#F79009' },
         ]}
         height={240}
         horizontal

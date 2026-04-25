@@ -6,7 +6,7 @@ import {
 
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
 
-const COLORS = ['#EE3423', '#2E90FA', '#12B76A', '#F79009', '#7A5AF8', '#221F1F'];
+const COLORS = ['#2E90FA', '#12B76A', '#F79009', '#7A5AF8', '#221F1F', '#EE3423'];
 
 const card = {
   background: 'var(--color-bg-card)',

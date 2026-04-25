@@ -196,9 +196,15 @@ export default function Dashboard() {
         <FilterPanel />
       </div>
 
-      {/* KPI Kartları */}
+      {/* Hero KPI — 3 ana metrik */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 28 }}>
+        <KpiCard hero label="Toplam Ciro"  value={formatCurrency(kpi?.sales?.total_revenue)} trend={trends.revenue} loading={loadingKpi} />
+        <KpiCard hero label="Genel ROAS"   value={formatRoas(kpi?.ads?.overall_roas)}         trend={trends.roas}    loading={loadingKpi} />
+        <KpiCard hero label="Oturumlar"    value={formatNumber(kpi?.traffic?.total_sessions)} trend={trends.sessions} loading={loadingKpi} />
+      </div>
+
+      {/* Detay KPI Kartları */}
       <KpiGrid title="Trafik">
-        <KpiCard label="Oturumlar"   value={formatNumber(kpi?.traffic?.total_sessions)}       trend={trends.sessions}        loading={loadingKpi} />
         <KpiCard label="Kullanıcılar" value={formatNumber(kpi?.traffic?.total_users)}          trend={trends.users}           loading={loadingKpi} />
         <KpiCard label="Hemen Çıkma" value={formatPercent(kpi?.traffic?.avg_bounce_rate)}     trend={trends.bounceRate}      loading={loadingKpi} />
         <KpiCard label="Ort. Süre"   value={formatDuration(kpi?.traffic?.avg_session_duration)} trend={trends.sessionDuration} loading={loadingKpi} />
@@ -206,13 +212,11 @@ export default function Dashboard() {
 
       <KpiGrid title="Reklam">
         <KpiCard label="Toplam Harcama"  value={formatCurrency(kpi?.ads?.total_spend)}       trend={trends.spend}       loading={loadingKpi} />
-        <KpiCard label="Genel ROAS"      value={formatRoas(kpi?.ads?.overall_roas)}           trend={trends.roas}        loading={loadingKpi} />
         <KpiCard label="Toplam Tıklama"  value={formatNumber(kpi?.ads?.total_clicks)}         trend={trends.clicks}      loading={loadingKpi} />
         <KpiCard label="Toplam Gösterim" value={formatNumber(kpi?.ads?.total_impressions)}    trend={trends.impressions} loading={loadingKpi} />
       </KpiGrid>
 
       <KpiGrid title="Satış">
-        <KpiCard label="Toplam Ciro"         value={formatCurrency(kpi?.sales?.total_revenue)}              trend={trends.revenue}          loading={loadingKpi} />
         <KpiCard label="Sipariş Sayısı"      value={formatNumber(kpi?.sales?.total_orders)}                 trend={trends.orders}           loading={loadingKpi} />
         <KpiCard label="Yeni Müşteri Cirosu" value={formatCurrency(kpi?.sales?.new_customer_revenue)}       trend={trends.newRevenue}       loading={loadingKpi} />
         <KpiCard label="Geri Dönen Müşteri"  value={formatCurrency(kpi?.sales?.returning_customer_revenue)} trend={trends.returningRevenue} loading={loadingKpi} />
@@ -224,8 +228,8 @@ export default function Dashboard() {
           title="Ciro & Oturum Trendi"
           labels={trendLabels}
           datasets={[
-            { label: 'Ciro (₺)', data: trendRevenue, color: '#EE3423', fill: true },
-            { label: 'Oturumlar', data: trendSessions, color: '#2E90FA' },
+            { label: 'Ciro (₺)', data: trendRevenue, color: '#2E90FA', fill: true },
+            { label: 'Oturumlar', data: trendSessions, color: '#7A5AF8' },
           ]}
           height={300}
           loading={loadingTrend}
@@ -247,7 +251,7 @@ export default function Dashboard() {
             title="Top 10 Kampanya — Harcama vs Ciro"
             labels={campaignLabels}
             datasets={[
-              { label: 'Harcama (₺)', data: campaignSpend, color: '#EE3423' },
+              { label: 'Harcama (₺)', data: campaignSpend, color: '#F79009' },
               { label: 'Ciro (₺)', data: campaignRevenue, color: '#2E90FA' },
             ]}
             height={260}
@@ -262,8 +266,8 @@ export default function Dashboard() {
         <ScatterChart
           title="ROAS vs Harcama (Kampanya Bazlı)"
           datasets={[
-            { label: 'Meta', points: scatterMeta, color: '#EE3423' },
-            { label: 'Google', points: scatterGoogle, color: '#2E90FA' },
+            { label: 'Meta', points: scatterMeta, color: '#2E90FA' },
+            { label: 'Google', points: scatterGoogle, color: '#F79009' },
           ]}
           xLabel="Harcama (₺)"
           yLabel="ROAS"

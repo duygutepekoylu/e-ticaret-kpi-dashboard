@@ -1,6 +1,12 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import logoLight from '../../assets/logo/sporthink-logo-sidebar.png';
+import logoDark from '../../assets/logo/sporthink-logo-sidebar-white.png';
+import logoIcon from '../../assets/logo/sporthink-icon-red.png';
+
+const FULL_W = 220;
+const ICON_W = 64;
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: (
@@ -15,10 +21,10 @@ const navItems = [
   { path: '/traffic', label: 'Trafik', icon: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
   )},
-  { path: '/funnel', label: 'Funnel', icon: (
+  { path: '/funnel', label: 'Dönüşüm Hunisi', icon: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
   )},
-  { path: '/cohort', label: 'Cohort', icon: (
+  { path: '/cohort', label: 'Müşteri Sadakati', icon: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
   )},
   { path: '/import', label: 'Import', icon: (
@@ -44,47 +50,101 @@ const navItems = [
 export default function Sidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem('sidebarCollapsed') === 'true');
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--sidebar-width', `${collapsed ? ICON_W : FULL_W}px`);
+    localStorage.setItem('sidebarCollapsed', collapsed);
+  }, [collapsed]);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const toggleBtn = (
+    <button
+      onClick={() => setCollapsed(c => !c)}
+      title={collapsed ? 'Genişlet' : 'Daralt'}
+      style={{
+        background: 'var(--color-bg-card)',
+        border: '1px solid var(--color-border)',
+        borderRadius: '50%',
+        width: 22, height: 22,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer',
+        color: 'var(--color-text-muted)',
+        padding: 0,
+        flexShrink: 0,
+      }}
+    >
+      {collapsed
+        ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        : <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      }
+    </button>
+  );
+
   return (
     <aside style={{
-      width: '220px',
+      width: collapsed ? ICON_W : FULL_W,
       minHeight: '100vh',
       background: 'var(--color-bg-sidebar)',
       borderRight: '1px solid var(--color-border)',
       display: 'flex',
       flexDirection: 'column',
       position: 'fixed',
-      top: 0,
-      left: 0,
-      bottom: 0,
+      top: 0, left: 0, bottom: 0,
       zIndex: 100,
+      transition: 'width 0.2s ease',
+      overflow: 'hidden',
     }}>
-      {/* Logo */}
-      <div style={{ padding: '20px 20px 18px', borderBottom: '1px solid var(--color-border)' }}>
-        <img
-          src={logoLight}
-          alt="Sporthink"
-          style={{ width: 140, height: 'auto', display: 'block' }}
-        />
+      {/* Logo + toggle */}
+      <div style={{
+        padding: collapsed ? '16px 0' : '18px 16px 18px 20px',
+        borderBottom: '1px solid var(--color-border)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: collapsed ? 'center' : 'space-between',
+        gap: 8,
+      }}>
+        {collapsed
+          ? <img src={logoIcon} alt="Sporthink" style={{ width: 28, height: 28, display: 'block' }} />
+          : <img src={isDark ? logoDark : logoLight} alt="Sporthink" style={{ width: 136, height: 'auto', display: 'block' }} />
+        }
+        {!collapsed && toggleBtn}
       </div>
 
+      {/* Collapsed toggle — icon modunda ikonun altında */}
+      {collapsed && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0 4px' }}>
+          {toggleBtn}
+        </div>
+      )}
+
       {/* Nav */}
-      <nav style={{ flex: 1, padding: '10px 10px', overflowY: 'auto' }}>
+      <nav style={{ flex: 1, padding: collapsed ? '6px 8px' : '10px 10px', overflowY: 'auto' }}>
         {navItems.map(({ path, label, icon }) => (
           <NavLink
             key={path}
             to={path}
             end={path === '/'}
+            title={collapsed ? label : undefined}
             style={({ isActive }) => ({
               display: 'flex',
               alignItems: 'center',
+              justifyContent: collapsed ? 'center' : 'flex-start',
               gap: 10,
-              padding: '8px 12px',
+              padding: collapsed ? '9px 0' : '8px 12px',
               borderRadius: 6,
               marginBottom: 2,
               textDecoration: 'none',
@@ -92,50 +152,71 @@ export default function Sidebar() {
               fontWeight: isActive ? 600 : 400,
               color: isActive ? 'var(--color-brand)' : 'var(--color-text-secondary)',
               background: isActive ? 'var(--color-brand-light)' : 'transparent',
-              transition: 'all 0.15s',
+              transition: 'background 0.15s, color 0.15s',
             })}
           >
             <span style={{ flexShrink: 0, opacity: 0.85 }}>{icon}</span>
-            {label}
+            {!collapsed && label}
           </NavLink>
         ))}
       </nav>
 
       {/* User info */}
-      <div style={{ padding: '12px 10px', borderTop: '1px solid var(--color-border)' }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 10,
-          padding: '8px 12px', borderRadius: 6,
-          background: 'var(--color-bg-page)',
-        }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: '50%',
-            background: 'var(--color-brand-light)',
-            border: '1px solid var(--color-brand-border)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 12, fontWeight: 700, color: 'var(--color-brand)',
-            flexShrink: 0,
-          }}>
-            {user?.email?.[0]?.toUpperCase() || 'U'}
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {user?.email || 'Kullanıcı'}
+      <div style={{ padding: collapsed ? '10px 8px' : '12px 10px', borderTop: '1px solid var(--color-border)' }}>
+        {collapsed ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <div
+              title={user?.email}
+              style={{
+                width: 28, height: 28, borderRadius: '50%',
+                background: 'var(--color-brand-light)',
+                border: '1px solid var(--color-brand-border)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, fontWeight: 700, color: 'var(--color-brand)',
+                cursor: 'default',
+              }}
+            >
+              {user?.email?.[0]?.toUpperCase() || 'U'}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--color-text-muted)', textTransform: 'capitalize' }}>{user?.role}</div>
+            <button
+              onClick={handleLogout}
+              title="Çıkış Yap"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: 2 }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
           </div>
-          <button
-            onClick={handleLogout}
-            title="Çıkış Yap"
-            style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: 'var(--color-text-muted)', fontSize: 14, padding: 2,
-              lineHeight: 1,
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          </button>
-        </div>
+        ) : (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '8px 12px', borderRadius: 6,
+            background: 'var(--color-bg-page)',
+          }}>
+            <div style={{
+              width: 28, height: 28, borderRadius: '50%',
+              background: 'var(--color-brand-light)',
+              border: '1px solid var(--color-brand-border)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 12, fontWeight: 700, color: 'var(--color-brand)',
+              flexShrink: 0,
+            }}>
+              {user?.email?.[0]?.toUpperCase() || 'U'}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user?.email || 'Kullanıcı'}
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', textTransform: 'capitalize' }}>{user?.role}</div>
+            </div>
+            <button
+              onClick={handleLogout}
+              title="Çıkış Yap"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 14, padding: 2, lineHeight: 1 }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
+          </div>
+        )}
       </div>
     </aside>
   );

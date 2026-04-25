@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useFilters } from '../../hooks/useFilters';
+import { formatDate } from '../../utils/format';
 import DateRangePicker from './DateRangePicker';
 import ChannelFilter from './ChannelFilter';
 import CampaignFilter from './CampaignFilter';
@@ -9,6 +10,51 @@ import AdvancedFilters from './AdvancedFilters';
 
 function hasActiveAdvanced(filters) {
   return filters.revenueMin || filters.revenueMax || filters.roasMin || filters.roasMax;
+}
+
+function FilterChip({ label, onRemove }) {
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 5,
+      fontSize: 12, fontWeight: 500,
+      color: 'var(--color-text-secondary)',
+      background: 'var(--color-bg-page)',
+      border: '1px solid var(--color-border)',
+      padding: '3px 10px', borderRadius: 20,
+    }}>
+      {label}
+      {onRemove && (
+        <button
+          onClick={onRemove}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1, color: 'var(--color-text-muted)', fontSize: 13 }}
+        >×</button>
+      )}
+    </span>
+  );
+}
+
+function ActiveFilterSummary({ filters, setFilter }) {
+  const chips = [];
+
+  if (filters.dateFrom && filters.dateTo) {
+    chips.push({ key: 'date', label: `${formatDate(filters.dateFrom)} – ${formatDate(filters.dateTo)}` });
+  }
+  if (filters.channel)  chips.push({ key: 'channel',  label: filters.channel,  onRemove: () => setFilter('channel', '') });
+  if (filters.campaign) chips.push({ key: 'campaign', label: filters.campaign, onRemove: () => setFilter('campaign', '') });
+  if (filters.device)   chips.push({ key: 'device',   label: filters.device,   onRemove: () => setFilter('device', '') });
+  if (filters.city)     chips.push({ key: 'city',     label: filters.city,     onRemove: () => setFilter('city', '') });
+
+  if (chips.length === 0) return null;
+
+  return (
+    <div style={{
+      display: 'flex', flexWrap: 'wrap', gap: 6,
+      padding: '8px 16px 10px',
+      borderTop: '1px solid var(--color-border-light)',
+    }}>
+      {chips.map(c => <FilterChip key={c.key} label={c.label} onRemove={c.onRemove} />)}
+    </div>
+  );
 }
 
 function ActiveBadge({ count }) {
@@ -24,7 +70,7 @@ function ActiveBadge({ count }) {
 }
 
 export default function FilterPanel() {
-  const { filters, resetFilters } = useFilters();
+  const { filters, setFilter, resetFilters } = useFilters();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
@@ -130,6 +176,8 @@ export default function FilterPanel() {
           )}
         </div>
       )}
+
+      <ActiveFilterSummary filters={filters} setFilter={setFilter} />
     </div>
   );
 }

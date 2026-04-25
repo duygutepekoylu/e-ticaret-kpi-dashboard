@@ -23,22 +23,22 @@ function TrendBadge({ trend }) {
   );
 }
 
-export default function KpiCard({ label, value, subtitle, trend, loading }) {
+export default function KpiCard({ label, value, subtitle, trend, loading, hero }) {
   const card = {
     background: 'var(--color-bg-card)',
-    border: '1px solid var(--color-border)',
-    borderRadius: 12,
-    padding: '20px 24px',
+    border: hero ? '1.5px solid var(--color-brand-border)' : '1px solid var(--color-border)',
+    borderRadius: 14,
+    padding: hero ? '28px 32px' : '20px 24px',
     display: 'flex',
     flexDirection: 'column',
-    gap: 10,
+    gap: hero ? 12 : 10,
   };
 
   if (loading) {
     return (
       <div style={card}>
-        <Skeleton width="55%" height={11} />
-        <Skeleton width="75%" height={28} radius={6} />
+        <Skeleton width="55%" height={hero ? 13 : 11} />
+        <Skeleton width="75%" height={hero ? 40 : 28} radius={6} />
         <Skeleton width="35%" height={11} />
       </div>
     );
@@ -46,10 +46,10 @@ export default function KpiCard({ label, value, subtitle, trend, loading }) {
 
   return (
     <div style={card}>
-      <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+      <p style={{ fontSize: hero ? 12 : 11, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
         {label}
       </p>
-      <p style={{ fontSize: 26, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.15 }}>
+      <p style={{ fontSize: hero ? 38 : 26, fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.1 }}>
         {value ?? '—'}
       </p>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 20 }}>

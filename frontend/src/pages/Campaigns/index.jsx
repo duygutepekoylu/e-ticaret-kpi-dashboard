@@ -80,7 +80,7 @@ export default function Campaigns() {
           title="Top 10 Kampanya — Harcama vs Ciro"
           labels={top10.map(r => r.campaign_name.length > 24 ? r.campaign_name.slice(0, 24) + '…' : r.campaign_name)}
           datasets={[
-            { label: 'Harcama (₺)', data: top10.map(r => Number(r.spend) || 0),   color: '#EE3423' },
+            { label: 'Harcama (₺)', data: top10.map(r => Number(r.spend) || 0),   color: '#F79009' },
             { label: 'Ciro (₺)',    data: top10.map(r => Number(r.revenue) || 0), color: '#2E90FA' },
           ]}
           height={300}
@@ -93,8 +93,8 @@ export default function Campaigns() {
         <ScatterChart
           title="ROAS vs Harcama (Kampanya Bazlı)"
           datasets={[
-            { label: 'Meta',   points: scatterMeta,   color: '#EE3423' },
-            { label: 'Google', points: scatterGoogle, color: '#2E90FA' },
+            { label: 'Meta',   points: scatterMeta,   color: '#2E90FA' },
+            { label: 'Google', points: scatterGoogle, color: '#F79009' },
           ]}
           xLabel="Harcama (₺)"
           yLabel="ROAS"

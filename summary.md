@@ -1,6 +1,6 @@
 # Sporthink — Ne Yaptık, Neredeyiz?
 
-**Güncel durum:** 10/14 faz tamamlandı. Sırada Faz 11 — Frontend: Dashboard Ana Sayfa.
+**Güncel durum:** 14/14 faz tamamlandı. Proje tamamlandı ✅
 
 ---
 
@@ -82,6 +82,62 @@ React Context kullanılarak global filtre state'i (`hooks/useFilters.js`) kuruld
 
 ---
 
-## Sonraki Adım — Faz 11: Dashboard Ana Sayfa
+## Faz 11 — Frontend: Dashboard Ana Sayfa ✅ (2026-04-24)
 
-Filtre mekanizması hazır. Sırada bu veriyi görselleştirmek var. `react-grid-layout` ile sürüklenebilir widget'lar, Chart.js ile çizgi/bar/donut grafikleri ve @tanstack/react-table ile veri tablolarını oluşturacağız. Grafikler, Faz 10'da yazdığımız global filtrelere tepki vererek güncellenecek.
+Tüm KPI verilerini tek ekranda toplayan Dashboard sayfasını inşa ettik. Top-down yaklaşım benimsedik: önce sayfa iskeleti, sonra bileşenler ihtiyaç geldikçe yazıldı.
+
+`KpiCard` (skeleton + trend badge) ve `KpiGrid` bileşenleri oluşturuldu. Chart bileşenleri yazıldı: `LineChart` (ciro+oturum trendi), `BarChart` (kampanya karşılaştırma), `DonutChart` (kanal dağılımı), `ScatterChart` (ROAS vs harcama). Her biri kendi loading skeleton ve "Veri bulunamadı" empty state'ini yönetiyor. `DataTable.jsx` sıralama ve sayfalama destekli yazıldı. `utils/format.js`'te Türkçe locale formatlamaları (para, yüzde, ROAS, süre) tanımlandı.
+
+Dashboard 12 KPI kartı + 4 grafik + 1 kampanya tablosundan oluşuyor. Tüm bileşenler `useFilters`'a bağlı — filtre değiştikçe API çağrıları otomatik tetikleniyor. Donut'ta kanala tıklayınca cross-filter aktif oluyor. Trend okları için seçili dönem ile önceki aynı uzunluktaki dönem paralel API çağrısıyla karşılaştırılıyor. İlk açılışta veritabanının gerçek tarih aralığı çekilerek filtre güncelleniyor.
+
+---
+
+## Faz 12 — Frontend: Analitik Sayfalar ✅ (2026-04-24)
+
+5 derinlemesine analitik sayfa yazıldı.
+
+**Traffic:** Oturum, kullanıcı, hemen çıkma, ortalama süre KPI kartları. Oturum+kullanıcı trend çizgi grafiği. Kanal bazlı oturum bar grafiği.
+
+**Channels:** Kanal gelir dağılımı donut (cross-filter aktif), ROAS bar, ciro vs harcama karşılaştırması, tüm metriklerin DataTable'ı.
+
+**Campaigns:** Meta vs Google yan yana KPI kartları, top 10 kampanya yatay bar, ROAS vs harcama scatter, 8 kolonlu kampanya tablosu.
+
+**Funnel (Dönüşüm Hunisi):** 6 adımlı huni grafiği için `FunnelChart.jsx` yazıldı (`chartjs-chart-funnel` kullanılıyor). Adım detay paneli tıklanabilir; renk degradesiyle dönüşüm oranları gösteriliyor.
+
+**Cohort (Müşteri Sadakati):** `HeatmapChart.jsx` (`chartjs-chart-matrix`) ile retention heatmap. Kohort bazlı özet kartlar ve ay x offset DataTable.
+
+Tüm sayfalar `useFilters` ile entegre ve filtre değiştikçe verilerini güncelliyor.
+
+---
+
+## Faz 13 — Frontend: Sistem Sayfaları ✅ (2026-04-25)
+
+6 operasyonel sayfa oluşturuldu.
+
+**Import:** Drag-drop dosya yükleme, kaynak tablo seçimi. Yükleme sonrası 10 satır önizleme tablosu. Commit ve rollback butonları. Import geçmişi listesi; her import'un hatalı satırları açılır panel olarak gösteriliyor.
+
+**Segments:** Kanal/kampanya/şehir kurallarından oluşan segment tanımları. Kaydetmeden önce inline önizleme: "X sipariş, Y müşteri eşleşiyor."
+
+**Views:** Mevcut filtre durumunu ve dashboard düzenini kaydeden saved_views CRUD. Görünümü yükleyince filtreler otomatik uygulanıyor.
+
+**Export:** 7 KPI/aggregation tablosu için tarih filtreli JSON indirme.
+
+**Logs:** Denetim logları ve API logları iki sekmeli. Server-side sayfalama.
+
+**Settings:** Dark mode toggle (localStorage + `document.documentElement.classList`). Hesap bilgileri (e-posta, rol, son giriş).
+
+Bu fazda `App.jsx`'e dark mode başlatma `useEffect`'i eklendi. Faz boyunca üç kritik bug çözüldü: kampanya filtresi obje yerine string render edince uygulama çöküyordu; backend kampanya endpoint'inde sütun adı hatalıydı; tüm yeni sayfalarda response format yolları güncellendi.
+
+---
+
+## Faz 14 — Uçtan Uca Test + Final ✅ (2026-04-25)
+
+Projenin son fazında UX polish ve kapsamlı testler yapıldı.
+
+**Dashboard hero metrik hiyerarşisi:** FilterPanel'in hemen altına 3 büyük hero kart eklendi (Toplam Ciro, Genel ROAS, Oturumlar). `KpiCard`'a `hero` prop eklendi — daha büyük yazı tipi (38px), daha geniş boşluklar, brand rengiyle çerçeveleme. Detay KPI kartları (9 adet) aşağıda gruplandı.
+
+**Aktif filtre badge:** `FilterPanel`'in altına `ActiveFilterSummary` bileşeni eklendi. Aktif tarih aralığı, kanal, kampanya, cihaz ve şehir filtrelerini chip olarak gösteriyor. Tarih dışındaki chipler tıklanarak kaldırılabiliyor.
+
+**Dark mod düzeltmeleri:** Sidebar'da dark/light logo otomatik değiştirme, collapse/expand toggle ve dark modda daha okunabilir metin tonları önceki fazlarda uygulanmıştı; bu fazda doğrulandı ve ux_notes.md'de kapatıldı.
+
+Uçtan uca testler: Auth akışı, KPI metrikleri, tarih filtreli trend ve kanal verileri, funnel adımları, audit logları, export, boş tarih aralığı (uygulama çökmüyor), geçersiz token ve yanlış şifre hataları, Organic ROAS=null, bounce rate weighted avg — hepsi doğrulandı.

@@ -79,7 +79,8 @@ Tailwind v4 — `tailwind.config.js` değil, `src/index.css` içinde tanımlanı
 }
 ```
 
-Grafik renk sırası: `#EE3423 → #221F1F → #2E90FA → #12B76A → #F79009 → #7A5AF8`
+Grafik renk sırası: `#2E90FA → #12B76A → #F79009 → #7A5AF8 → #221F1F → #EE3423`
+(Kırmızı son sıradadır — yalnızca negatif göstergeler, hata durumları ve brand highlight için.)
 
 ### Font
 

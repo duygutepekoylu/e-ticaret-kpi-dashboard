@@ -3,7 +3,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const COLORS = ['#EE3423', '#221F1F', '#2E90FA', '#12B76A', '#F79009', '#7A5AF8'];
+const COLORS = ['#2E90FA', '#12B76A', '#F79009', '#7A5AF8', '#221F1F', '#EE3423'];
 
 const card = {
   background: 'var(--color-bg-card)',

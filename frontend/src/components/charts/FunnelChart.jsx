@@ -53,8 +53,8 @@ export default function FunnelChart({ title, steps = [], height = 360, loading }
     datasets: [{
       data: values,
       backgroundColor: [
-        '#EE3423CC', '#D42D1ECC', '#B82818CC',
-        '#9C2213CC', '#801C0ECC', '#641608CC',
+        '#2E90FACC', '#1E7AE6CC', '#0D6AD0CC',
+        '#0C5EBACC', '#0A52A4CC', '#08468ECC',
       ],
       borderColor: 'transparent',
       borderWidth: 0,

@@ -56,7 +56,7 @@ export default function Cohort() {
   const cohortSummary = points.filter(r => Number(r.offset_month) === 0);
 
   return (
-    <PageWrapper title="Kohort Analizi" subtitle="Müşteri tutma (retention) ve kohort bazlı gelir analizi">
+    <PageWrapper title="Müşteri Sadakati" subtitle="Kohort bazlı retention ve gelir analizi">
       <div style={{ marginBottom: 28 }}><FilterPanel /></div>
 
       <div style={{ marginBottom: 24 }}>

@@ -15,9 +15,8 @@ Faz 14'te veya uygun bir zamanda bu listeye göre karar alınacak.
 
 ### 2. Sidebar her zaman tam açık
 **Sorun:** Küçük ekranlarda içerik alanı daralıyor.
-**Öneri:** Collapse toggle — icon modu. `sporthink-icon-red.png` zaten hazır.
-**Efor:** Küçük — toggle state eklenir.
-**Öncelik:** Yüksek
+**Uygulanan (2026-04-25):** Collapse toggle + icon modu uygulandı. `collapsed` state localStorage'a kaydediliyor. `sporthink-icon-red.png` kapalı modda gösteriliyor.
+**Öncelik:** ✅ Uygulandı
 
 ### 3. Aktif filtre görünür değil
 **Sorun:** Kullanıcı hangi filtrenin aktif olduğunu anlamıyor.
@@ -27,9 +26,9 @@ Faz 14'te veya uygun bir zamanda bu listeye göre karar alınacak.
 
 ### 4. Sayfa isimleri teknik jargon
 **Sorun:** "Kohort", "Funnel" pazarlama ekibine yabancı gelebilir.
-**Öneri:** "Kohort" → "Müşteri Sadakati", "Funnel" → "Satın Alma Yolculuğu"
-**Efor:** Çok küçük — `Sidebar.jsx` + `PageWrapper` title.
-**Öncelik:** Orta
+**Uygulanan (2026-04-25):** "Funnel" → "Dönüşüm Hunisi", "Kohort" → "Müşteri Sadakati" — sidebar ve sayfa başlıkları tutarlı hale getirildi.
+**Açık soru:** Bu isimler geçici olarak kabul edildi. Kullanıcı testi veya ekip geri bildirimi sonrası yeniden değerlendirmek üzere not alındı. Alternatif adaylar: "Satış Yolculuğu" / "Alışveriş Yolculuğu" (Funnel için); "Müşteri Bağlılığı" (Cohort için).
+**Öncelik:** İzle
 
 ### 5. Grafik renk sırası kafa karıştırıyor
 **Sorun:** Brand kırmızısı (#EE3423) hem grafik birinci rengi hem negatif/hata rengi — "kırmızı = kötü" algısı oluşuyor.
@@ -57,15 +56,13 @@ Faz 14'te veya uygun bir zamanda bu listeye göre karar alınacak.
 
 ### 9. Dark modda sidebar logosu okunamıyor
 **Sorun:** Sidebar'da siyah logo (`sporthink-logo-sidebar.png`) dark mod arka planında görünmüyor, sadece kırmızı kısım seçilebiliyor.
-**Öneri:** Dark modda `sporthink-logo-sidebar-white.png` kullan — `Sidebar.jsx`'te `darkMode` state'e göre logo değiştirilmeli.
-**Efor:** Çok küçük — tek satır değişiklik.
-**Öncelik:** Yüksek
+**Uygulanan (2026-04-25):** `Sidebar.jsx`'te `isDark` state (MutationObserver) eklendi. Dark modda `sporthink-logo-sidebar-white.png`, light modda `sporthink-logo-sidebar.png` gösteriliyor.
+**Öncelik:** ✅ Uygulandı
 
 ### 10. Dark modda açıklama metinleri zor okunuyor
 **Sorun:** `--color-text-muted` ve `--color-text-secondary` dark modda yeterince açık değil, küçük açıklama yazıları loş kalıyor.
-**Öneri:** Dark mod CSS değişkenlerinde `--color-text-muted` ve `--color-text-secondary` değerlerini biraz daha açık tona çek.
-**Efor:** Çok küçük — `index.css` dark mod bloğuna iki satır.
-**Öncelik:** Yüksek
+**Uygulanan (2026-04-25):** `index.css` dark mod bloğu: `--color-text-secondary: #B8B8C8`, `--color-text-muted: #808090` olarak güncellendi.
+**Öncelik:** ✅ Uygulandı
 
 ---
 
@@ -74,12 +71,12 @@ Faz 14'te veya uygun bir zamanda bu listeye göre karar alınacak.
 | # | Sorun | Efor | Öncelik |
 |---|---|---|---|
 | 1 | Dashboard hero metric hiyerarşisi | Küçük | Yüksek |
-| 2 | Sidebar collapse (icon modu) | Küçük | Yüksek |
+| 2 | Sidebar collapse (icon modu) | Küçük | ✅ Uygulandı |
 | 3 | Aktif filtre badge gösterimi | Orta | Yüksek |
-| 4 | Sayfa isimlerini Türkçeleştir | Çok küçük | Orta |
-| 5 | Grafik renk sırası düzenle | Küçük | Orta |
+| 4 | Sayfa isimlerini Türkçeleştir | Çok küçük | ✅ Uygulandı (izle) |
+| 5 | Grafik renk sırası düzenle | Küçük | ✅ Uygulandı |
 | 6 | DataTable kolon gizle/göster | Orta | Orta |
 | 7 | Bağlamsal boş durum mesajları | Küçük | Düşük |
 | 8 | Responsive tasarım | Büyük | Faz 14 |
-| 9 | Dark mod sidebar logo (siyah → beyaz) | Çok küçük | Yüksek |
-| 10 | Dark mod açıklama metni kontrastı | Çok küçük | Yüksek |
+| 9 | Dark mod sidebar logo (siyah → beyaz) | Çok küçük | ✅ Uygulandı |
+| 10 | Dark mod açıklama metni kontrastı | Çok küçük | ✅ Uygulandı |
