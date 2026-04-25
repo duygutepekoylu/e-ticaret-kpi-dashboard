@@ -2,13 +2,61 @@
 
 ## Güncel Durum
 
-**Aktif Faz:** Faz 9 — Frontend Kurulum + Routing
-**Genel İlerleme:** 8/14 faz tamamlandı
-**Son Güncelleme:** 2026-04-22
+**Aktif Faz:** Faz 14 — Uçtan Uca Test + Final
+**Genel İlerleme:** 13/14 faz tamamlandı
+**Son Güncelleme:** 2026-04-25
 
 ---
 
 ## Tamamlanan Fazlar
+
+### Faz 13 — Frontend: Sistem Sayfaları ✅
+Tamamlanma: 2026-04-25
+Özet: 6 sistem sayfası tamamlandı. `pages/Export/` — 7 KPI/aggregation tablosu için tarih filtreli JSON indirme, her tablo ayrı kart. `pages/Logs/` — audit_logs + api_logs iki sekmeli, server-side sayfalama, method/status/action badge'leri. `pages/Views/` — saved views CRUD; oluştur (filtreler + layout), listele, yükle (filtreleri uygula), sil. `pages/Settings/` — dark mode toggle (localStorage + document.documentElement.classList), varsayılan tarih aralığı, hesap bilgileri (read-only). `pages/Segments/` — segment listesi, kural oluşturucu (kanal/kampanya/şehir), inline önizleme (eşleşen sipariş/müşteri sayısı). `pages/Import/` — drag-drop dosya yükleme, kaynak tablo seçimi, önizleme tablosu, commit/rollback, import geçmişi + hata detayı açılır panel. `App.jsx`'e dark mode başlatma `useEffect`'i eklendi.
+Düzeltilen buglar: (1) `filters/campaigns` endpoint'inde `campaign_id` sütunu yoktu → `id AS campaign_id` ile düzeltildi; (2) `CampaignFilter.jsx` kampanya objelerini string olarak render ediyordu → uygulama çöküyordu, `.map(c => c.campaign_name)` ile düzeltildi; (3) tüm yeni sayfalarda `data.views`, `data.segments`, `data.logs`, `data.rows` response format hataları düzeltildi; (4) Views create'de `layout: {}` zorunlu alan eksikti; (5) API logs'ta `path` → `endpoint` sütun adı düzeltildi.
+Bilinen kısıt: Import'ta boş/geçersiz zorunlu alan içeren satırlar DB constraint'e takılınca backend tüm transaction'ı rollback ediyor — "hatalı satır raporu, commit devam etsin" davranışı mevcut değil. Faz 14'te veya sonrasında değerlendirilebilir.
+UX notları: Dark mod sidebar logosu (siyah → beyaz) ve açıklama metni kontrastı `docs/ux_notes.md`'ye 9. ve 10. tespit olarak eklendi, Faz 14'te ele alınacak.
+
+### Faz 12 — Frontend: Analitik Sayfalar ✅
+Tamamlanma: 2026-04-24
+Özet: 5 analitik sayfa ve 2 grafik bileşeni tamamlandı. `FunnelChart.jsx` (chartjs-chart-funnel, 6 adım, renk degradesi) ve `HeatmapChart.jsx` (chartjs-chart-matrix, retention rengine göre yeşil→kırmızı skala) yazıldı. `pages/Traffic/` — trafik KPI kartları (oturum, kullanıcı, dönüşüm, hemen çıkma, ort. süre), oturum+kullanıcı trend çizgi grafiği, kanal bazlı oturum bar grafiği. `pages/Channels/` — donut (kanal gelir dağılımı, cross-filter aktif), ROAS bar, ciro vs harcama bar, tüm metriklerin DataTable'ı. `pages/Campaigns/` — Meta vs Google yan yana KPI kartları, top 10 kampanya yatay bar, ROAS vs harcama scatter, 8 kolonlu kampanya tablosu. `pages/Funnel/` — 6 adım huni grafiği + adım detay paneli (renkli oran gösterimi) + DataTable; GA4 "conversion" adımı anomali notu (tüm GA4 dönüşüm tiplerini sayar, purchase'tan büyük çıkabilir). `pages/Cohort/` — retention heatmap (HeatmapChart), kohort bazlı müşteri özet kartları, retention+gelir DataTable; `total_customers > 0` filtresi uygulandı. Tüm sayfalar `useFilters` ile entegre.
+
+### Faz 11 — Frontend: Dashboard Ana Sayfa ✅
+Tamamlanma: 2026-04-24
+Özet: Top-down yaklaşımla Dashboard sayfası inşa edildi. `utils/format.js` (Türkçe locale: para, yüzde, ROAS, süre formatları) oluşturuldu. `components/kpi/KpiCard.jsx` (skeleton + trend badge) ve `KpiGrid.jsx` yazıldı. Chart bileşenleri: `LineChart`, `BarChart`, `DonutChart`, `ScatterChart` — her biri loading skeleton ve "Veri bulunamadı" empty state yönetiyor. `DataTable.jsx` sıralama ve sayfalama destekli yazıldı. Dashboard sayfası: 12 KPI kartı (trafik/reklam/satış), ciro+oturum trend grafiği, kanal donut, kampanya bar (yatay, top 10), ROAS vs harcama scatter ve kampanya detay tablosu. Tüm bileşenler `useFilters` `apiParams`'a bağlı — filtre değişince otomatik güncelleniyor. Donut kanala tıklayınca cross-filter aktif. Trend okları önceki dönem karşılaştırmasıyla (ikinci paralel `/kpi/summary` çağrısı): seçili aralığın aynı uzunluktaki önceki dönemiyle karşılaştırma, önceki dönem verisi yoksa ok gizleniyor. `useFilters` varsayılan tarihleri boşa alındı; Dashboard mount'ta DB'den gerçek veri aralığını çekip filtreye set ediyor.
+Düzeltilen buglar: (1) `useUrlSync` default tarihleri URL'e yazıp date range fetch'ini bloke ediyordu → `getDefaultDates()` boş string döndürecek şekilde değiştirildi; (2) trend verisinde tarih başına birden fazla satır (kaynak bazlı) → frontend'de tarihe göre gruplama eklendi.
+Kararlar: react-grid-layout ve saved views bu fazda yok (sonraya ertelendi); PivotTable Dashboard'dan çıkarıldı; responsive tasarım Faz 14'te. Sunum için Q1 2025 / Q4 2024 karşılaştırması trend oklarını tam gösterir.
+
+### Faz 10 — Frontend: Filtre Sistemi ✅
+Tamamlanma: 2026-04-24
+Özet: React Context tabanlı global filtre sistemi (`hooks/useFilters.js`) oluşturuldu. `useUrlSync.js` hook'u ile filtre değerlerinin URL query string ile çift yönlü senkronizasyonu sağlandı (sayfa yenilense de filtreler kaybolmuyor). DateRangePicker, ChannelFilter, CampaignFilter, DeviceFilter ve CityFilter gibi bileşenler kodlandı. Gelişmiş filtreler (roas ve revenue min/max) için bir toggle yapısı ve aktif filtre sayacı eklendi. Tüm bu bileşenleri içeren responsive `FilterPanel.jsx` ana layout bileşeni yazıldı. CLAUDE.md yönergelerine uygun olarak, tasarım felsefesi uygulandı: Futura font entegre edildi, `@font-face` yolları build sırasında Vite tarafından doğru çözülecek şekilde göreceli (relative) hale getirildi, logolar `assets/logo/` altına klasörlenip kullanıma hazırlandı.
+Testler: Vite build test edildi ve hatalı yollar giderildi. URL ↔ UI senkronizasyonu tamam. (Cross-filter ve dashboard grafik testleri Faz 11'e bırakıldı).
+
+---
+
+### Faz 9 — Frontend Kurulum + Routing ✅
+Tamamlanma: 2026-04-23
+Özet: Vite + React + Tailwind CSS v4 (`@tailwindcss/vite` plugin) kuruldu. `vite.config.js`'e
+proxy eklendi (/api → localhost:3001) — frontend ile backend aynı origin gibi çalışıyor.
+`services/api.js`: axios base instance, request interceptor (JWT token), response interceptor
+(401 → localStorage temizle + /login'e yönlendir). `contexts/AuthContext.jsx`: login/logout
+fonksiyonları, localStorage senkronizasyonu. `components/ui/ProtectedRoute.jsx`: token yoksa
+login'e yönlendirir. `components/ui/PublicRoute.jsx`: giriş yapmışken /login'e erişimi engeller.
+`components/layout/Sidebar.jsx`: 13 sayfa nav link, aktif link highlight (NavLink isActive),
+kullanıcı e-posta + rol gösterimi, çıkış butonu. `components/layout/PageWrapper.jsx`: başlık +
+alt başlık + action alanı. Login sayfası: form validasyon, hata gösterimi, JWT alıp
+AuthContext'e kaydet. 13 placeholder sayfa. Tüm test kriterleri geçti:
+- npm run dev → hata yok, port 5173 ✅
+- Giriş olmadan / → /login yönlendirmesi ✅
+- Yanlış şifre → hata mesajı ✅
+- admin@sporthink.com / admin123 → Dashboard ✅
+- 13 sidebar linki çalışıyor ✅
+- Giriş yapmışken /login → Dashboard ✅
+- Token interceptor çalışıyor ✅
+Not: macOS Homebrew MySQL + tcp (127.0.0.1) üzerinden bağlantı.
+GitHub'a push edildi: https://github.com/duygu364/e-ticaret-kpi-dashboard
+
+---
 
 ### Faz 8 — REST API: KPI + Dashboard + Diğer Endpoint'ler ✅
 Tamamlanma: 2026-04-22
@@ -232,20 +280,16 @@ durumlar için kullanılır. Her faz tamamlandığında özet buraya eklenir.
 - Cache yok — aggregation tablolar önbellek görevi yapıyor
 - swagger-jsdoc ile koddan üretim
 - react-chartjs-2 + chartjs-chart-funnel + chartjs-chart-matrix
-- @tanstack/react-table (pivot view)
-- react-grid-layout (drag-drop dashboard)
+- @tanstack/react-table ve react-grid-layout bağımlılık olarak eklendi, henüz kullanılmıyor
 
 ### Ertelenen Kararlar
-- meta_ads_breakdown_demographic ve geo tabloları — toplantıda
-  netleştirilecek, şu an kapsam dışı
+- meta_ads_breakdown_demographic ve geo tabloları — şu an kapsam dışı
 - Partition stratejisi — production geçişinde uygulanacak
 - Canlı API bağlantıları — production kapsamında
+- Pivot view — Dashboard'dan çıkarıldı, ihtiyaç duyulursa Faz 14'te değerlendirilebilir
+- Drag-drop layout — Faz 14'te değerlendirilebilir
+- pages/Filters — saved_views tablosu bu ihtiyacı karşıladığı için kapsam dışı bırakıldı
 
----
-
-## Sıradaki Adım
-
-**Faz 1'i başlatmak için:**
-1. MySQL'in çalıştığını doğrula
-2. `database/fixtures/raw/` klasörüne CSV'leri kopyala
-3. `roadmap.md` → Faz 1 adımlarını takip et
+### Sıradaki Adımlar
+- **Faz 13:** 6 sistem sayfası — Import (en büyük iş), Segments, Views, Export, Logs, Settings
+- **Faz 14:** Responsive tasarım + görsel polish + final test

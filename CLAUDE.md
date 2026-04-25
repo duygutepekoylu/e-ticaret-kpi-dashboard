@@ -23,6 +23,98 @@ sorusunu cevaplayabilmek. Drill-down, cross-filter, segment analizi bunun için.
 
 ---
 
+## Kurumsal Kimlik & Tasarım Felsefesi
+
+> Renk, font ve logo sabittir. Tasarım kararları Claude Code'a bırakılır.
+
+### Tasarım Felsefesi
+
+Temiz, sade, profesyonel. Öncelik her zaman verinin net okunmasıdır.
+Dekorasyon değil, netlik. Her bileşen loading ve empty state yönetir — asla crash olmaz.
+
+Varsayılan mod **light**'tır. Kullanıcı tercihe göre dark moda geçebilir,
+tercih `localStorage`'da saklanır.
+
+### Renkler
+
+Tailwind v4 — `tailwind.config.js` değil, `src/index.css` içinde tanımlanır:
+
+```css
+/* LIGHT (varsayılan) */
+@theme {
+  --color-brand:          #EE3423;
+  --color-brand-hover:    #D42D1E;
+  --color-brand-light:    #FDECEA;
+  --color-brand-border:   #F5B7B1;
+  --color-dark:           #221F1F;
+  --color-bg-page:        #F5F6F8;
+  --color-bg-card:        #FFFFFF;
+  --color-bg-sidebar:     #FFFFFF;
+  --color-border:         #E4E7EC;
+  --color-border-light:   #F2F4F7;
+  --color-text-primary:   #221F1F;
+  --color-text-secondary: #667085;
+  --color-text-muted:     #98A2B3;
+  --color-success:        #12B76A;
+  --color-success-bg:     #ECFDF3;
+  --color-danger:         #F04438;
+  --color-danger-bg:      #FEF3F2;
+  --color-warning:        #F79009;
+  --color-warning-bg:     #FFFAEB;
+}
+
+/* DARK */
+.dark {
+  --color-bg-page:        #0F0F10;
+  --color-bg-card:        #1A1A1E;
+  --color-bg-sidebar:     #1A1A1E;
+  --color-border:         #2C2C32;
+  --color-border-light:   #222228;
+  --color-text-primary:   #F0EFEF;
+  --color-text-secondary: #9A9AA8;
+  --color-text-muted:     #5C5C6A;
+  --color-success-bg:     #052E16;
+  --color-danger-bg:      #2D0A0A;
+  --color-warning-bg:     #2D1A00;
+}
+```
+
+Grafik renk sırası: `#EE3423 → #221F1F → #2E90FA → #12B76A → #F79009 → #7A5AF8`
+
+### Font
+
+Futura PT — `frontend/src/assets/fonts/futura_font_family/` altında.
+
+```css
+@font-face { font-family: 'Futura PT'; src: url('/assets/fonts/futura_font_family/Futura_PT_Book.otf') format('opentype'); font-weight: 400; }
+@font-face { font-family: 'Futura PT'; src: url('/assets/fonts/futura_font_family/Futura_PT_Medium.otf') format('opentype'); font-weight: 500; }
+@font-face { font-family: 'Futura PT'; src: url('/assets/fonts/futura_font_family/Futura_PT_Demi.otf') format('opentype'); font-weight: 600; }
+@font-face { font-family: 'Futura PT'; src: url('/assets/fonts/futura_font_family/Futura_PT_Bold.otf') format('opentype'); font-weight: 700; }
+@font-face { font-family: 'Futura PT'; src: url('/assets/fonts/futura_font_family/Futura_PT_Heavy.otf') format('opentype'); font-weight: 800; }
+
+@theme {
+  --font-sans: 'Futura PT', 'Century Gothic', sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+```
+
+### Logo
+
+| Dosya | Kullanım |
+|---|---|
+| `frontend/src/assets/logo/sporthink-logo-black.png` | Light mod |
+| `frontend/src/assets/logo/sporthink-logo-white.png` | Dark mod |
+| `frontend/src/assets/logo/sporthink-logo-sidebar.png` | Sidebar açık — light (183×40px) |
+| `frontend/src/assets/logo/sporthink-logo-sidebar-white.png` | Sidebar açık — dark (183×40px) |
+| `frontend/src/assets/logo/sporthink-icon-red.png` | Sidebar kapalı — her iki mod |
+
+Logoya renk değişikliği, filter veya overlay uygulanmaz.
+
+---
+
 ## Teknoloji Stacki
 
 | Katman | Teknoloji | Not |

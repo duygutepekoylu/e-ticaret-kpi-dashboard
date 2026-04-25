@@ -1,6 +1,6 @@
 # Sporthink — Ne Yaptık, Neredeyiz?
 
-**Güncel durum:** 4/14 faz tamamlandı. Sırada Faz 5 — KPI Motoru.
+**Güncel durum:** 10/14 faz tamamlandı. Sırada Faz 11 — Frontend: Dashboard Ana Sayfa.
 
 ---
 
@@ -54,6 +54,34 @@ Kritik bir teknik keşif: MySQL 9.x ile mysql2'yi macOS'ta kullanırken TCP bağ
 
 ---
 
-## Sonraki Adım — Faz 5: KPI Motoru
+## Faz 5 & 6 — KPI Motoru ✅ (2026-04-21)
 
-Import altyapısı tamam. Sırada verilerin anlam kazanacağı katman: KPI hesaplama motoru. `kpi/formulas.js`'te temel hesaplamalar, ardından traffic, ads, sales, channel, campaign, product, cohort modülleri. Ağırlıklı ortalama (bounce rate, pages/session), ROAS hesabı (gelir her zaman orders tablosundan), GA4 item-scope/session-scope ayrımı bu fazın kritik kuralları.
+KPI hesaplama motorunu MySQL üzerinde çalışacak şekilde iki parçada inşa ettik.
+**Faz 5 (Traffic, Ads, Sales):** Temel formüller (`weightedAvg`, `roas`, `growthRate`) `kpi/formulas.js` içine merkezi olarak yerleştirildi. ROAS hesabında kesin bir kural uygulandı: reklam platformlarının kendi gönderdiği ciro verileri asla kullanılmıyor, ciro her zaman kendi siparişler (`orders`) tablomuzdan çekiliyor. Ağırlıklı ortalamalar SQL sorgusu içinde (`SUM(değer * session) / SUM(session)`) hesaplanıyor.
+**Faz 6 (Channel, Campaign, Product, Cohort):** Aggregation sorguları oluşturuldu. GA4 `item_interactions` ile `traffic` tablolarının scope farklılıkları nedeniyle asla JOIN edilmemesi kuralı harfiyen uygulandı. Cohort analizi gün bazlı değil ay bazlı (`YYYY-MM`) offset ile çalışacak şekilde geliştirildi. Bütün tablolar başarıyla dolduruldu.
+
+---
+
+## Faz 7 & 8 — REST API Uç Noktaları ✅ (2026-04-22)
+
+Backend API katmanı tamamlandı ve test edildi.
+**Faz 7 (Auth + Import):** JWT tabanlı yetkilendirme eklendi (`authController`). Parolalar `bcryptjs` ile şifreleniyor. Import işlemleri için (multer file upload, map columns, validate, commit, rollback) tüm route'lar yazıldı. En önemli karar: Node.js/Sequelize validator modülü uygulamayı çok yavaşlattığı için ORM kullanımı tamamen kaldırılarak `mysql2/promise` yapısına geçildi, DB performansı katlandı.
+**Faz 8 (KPI, Dashboard, Export, Logs vb.):** Dashboard trend analizleri, huni (funnel), ürün performans, kayıtlı görünümler (saved_views) ve CRUD işlemleri hazır. Swagger ile 36 adet endpoint otomatik olarak dokümante ediliyor (lazy load ile açılışta donma engellendi).
+
+---
+
+## Faz 9 — Frontend Kurulum + Routing ✅ (2026-04-23)
+
+Vite, React ve Tailwind CSS v4 stack'i ile frontend temelleri atıldı. `vite.config.js` proxy ayarlarıyla backend'e aynı domain üzerinden bağlanıldı. Axios interceptor'ları yazıldı (401 durumunda otomatik logout/login yönlendirmesi). React Router Dom ile 13 ayrı sayfanın taslağı (placeholder) oluşturuldu. Protected ve Public route korumaları tamamlandı.
+
+---
+
+## Faz 10 — Frontend: Filtre Sistemi ✅ (2026-04-24)
+
+React Context kullanılarak global filtre state'i (`hooks/useFilters.js`) kuruldu. URL ile çift yönlü senkronizasyon (`hooks/useUrlSync.js`) sağlandı; sayfayı yenileyince veya URL paylaşıldığında filtreler korunuyor. DateRange, Channel, Campaign, Device ve City filtre bileşenleri yazıldı. Tüm bunları kapsayan ve gelişmiş filtreleri de içeren `FilterPanel.jsx` oluşturuldu. Futura fontları ve tüm logo assets sisteme entegre edildi, Vite build hataları çözüldü.
+
+---
+
+## Sonraki Adım — Faz 11: Dashboard Ana Sayfa
+
+Filtre mekanizması hazır. Sırada bu veriyi görselleştirmek var. `react-grid-layout` ile sürüklenebilir widget'lar, Chart.js ile çizgi/bar/donut grafikleri ve @tanstack/react-table ile veri tablolarını oluşturacağız. Grafikler, Faz 10'da yazdığımız global filtrelere tepki vererek güncellenecek.

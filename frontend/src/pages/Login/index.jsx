@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { login as loginApi } from '../../services/api';
+import logo from '../../assets/logo/sporthink-logo-black.png';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -30,53 +31,46 @@ export default function Login() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'var(--bg-primary)',
+      background: 'var(--color-bg-page)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
     }}>
-      <div style={{
-        width: '100%',
-        maxWidth: 400,
-        padding: '0 20px',
-      }}>
+      <div style={{ width: '100%', maxWidth: 400, padding: '0 20px' }}>
+
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{
-            width: 52, height: 52, borderRadius: 14,
-            background: 'linear-gradient(135deg, var(--accent), #8b5cf6)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 24, fontWeight: 800, margin: '0 auto 16px',
-          }}>S</div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 6 }}>
-            Sporthink KPI
-          </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
+          <img
+            src={logo}
+            alt="Sporthink"
+            style={{ height: 36, width: 'auto', margin: '0 auto 20px', display: 'block' }}
+          />
+          <p style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>
             Dashboard'a giriş yapın
           </p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} style={{
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          borderRadius: 16,
+          background: 'var(--color-bg-card)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 12,
           padding: 32,
         }}>
           {error && (
             <div style={{
-              background: 'rgba(239,68,68,0.1)',
-              border: '1px solid rgba(239,68,68,0.3)',
+              background: 'var(--color-danger-bg)',
+              border: '1px solid var(--color-brand-border)',
               borderRadius: 8,
               padding: '10px 14px',
               marginBottom: 20,
               fontSize: 13,
-              color: '#f87171',
+              color: 'var(--color-danger)',
             }}>{error}</div>
           )}
 
           <div style={{ marginBottom: 18 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: 8 }}>
               E-posta
             </label>
             <input
@@ -89,18 +83,19 @@ export default function Login() {
               style={{
                 width: '100%',
                 padding: '10px 14px',
-                background: 'var(--bg-secondary)',
-                border: '1px solid var(--border)',
+                background: 'var(--color-bg-page)',
+                border: '1px solid var(--color-border)',
                 borderRadius: 8,
-                color: 'var(--text-primary)',
+                color: 'var(--color-text-primary)',
                 fontSize: 14,
                 outline: 'none',
+                fontFamily: 'inherit',
               }}
             />
           </div>
 
           <div style={{ marginBottom: 24 }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: 8 }}>
               Şifre
             </label>
             <input
@@ -113,12 +108,13 @@ export default function Login() {
               style={{
                 width: '100%',
                 padding: '10px 14px',
-                background: 'var(--bg-secondary)',
-                border: '1px solid var(--border)',
+                background: 'var(--color-bg-page)',
+                border: '1px solid var(--color-border)',
                 borderRadius: 8,
-                color: 'var(--text-primary)',
+                color: 'var(--color-text-primary)',
                 fontSize: 14,
                 outline: 'none',
+                fontFamily: 'inherit',
               }}
             />
           </div>
@@ -130,7 +126,7 @@ export default function Login() {
             style={{
               width: '100%',
               padding: '11px',
-              background: loading ? 'var(--text-muted)' : 'var(--accent)',
+              background: loading ? 'var(--color-text-muted)' : 'var(--color-brand)',
               color: '#fff',
               border: 'none',
               borderRadius: 8,
@@ -138,7 +134,10 @@ export default function Login() {
               fontWeight: 600,
               cursor: loading ? 'not-allowed' : 'pointer',
               transition: 'background 0.2s',
+              fontFamily: 'inherit',
             }}
+            onMouseEnter={(e) => { if (!loading) e.target.style.background = 'var(--color-brand-hover)'; }}
+            onMouseLeave={(e) => { if (!loading) e.target.style.background = 'var(--color-brand)'; }}
           >
             {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
           </button>

@@ -49,7 +49,7 @@ router.get('/channels', async (req, res, next) => {
 router.get('/campaigns', async (req, res, next) => {
   try {
     const [rows] = await pool.execute(
-      'SELECT campaign_id, campaign_name FROM campaigns ORDER BY campaign_name ASC'
+      'SELECT id AS campaign_id, campaign_name FROM campaigns ORDER BY campaign_name ASC'
     );
     res.json(success({ campaigns: rows }));
   } catch (err) {
